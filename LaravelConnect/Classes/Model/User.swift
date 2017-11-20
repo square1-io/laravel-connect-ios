@@ -22,13 +22,21 @@ public class User: NSManagedObject {
         return "id"
     }
     
+    
 }
 
 extension User {
     
     @nonobjc  public class func fetchRequest() -> NSFetchRequest<User> {
-        User.
         return NSFetchRequest<User>(entityName: "User")
+    }
+    
+}
+
+extension User {
+    
+    public static func list(){
+    
     }
     
 }

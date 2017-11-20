@@ -13,3 +13,7 @@ class LaravelRequest: NSObject {
         model.perform(
     }
 }
+
+protocol LaravelRequestObserver {
+    
+}

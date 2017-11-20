@@ -10,7 +10,7 @@ import UIKit
 import LaravelConnect
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, LaravelRequestObserver {
 
     var window: UIWindow?
 
@@ -19,6 +19,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Override point for customization after application launch.
         LaravelConnect.setup();
+        staging.newb.com
+        //
+        api.newb.co
+        
+        ModelListBuilder userList = User.list();
+        
+        MoldeList list = userList.filter(whateverFilter).firltter2().build();
+        list.cache();
+        list.refresh()//ingnore locall
+        FetchedResultController set
+        list.nextPage(self);
+        
+        list.get(0);
+        
+        list.curentPage
+        list.tota
+        //waiting for too long
+        currentRequest.cancel();
         
         return true
     }
