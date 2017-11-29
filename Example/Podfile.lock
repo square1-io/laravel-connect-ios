@@ -4,7 +4,8 @@ PODS:
   - FBSnapshotTestCase/Core (2.1.4)
   - FBSnapshotTestCase/SwiftSupport (2.1.4):
     - FBSnapshotTestCase/Core
-  - LaravelConnect (0.1.0)
+  - LaravelConnect (0.1.0):
+    - Sync (~> 4.0)
   - Nimble (7.0.2)
   - Nimble-Snapshots (6.3.0):
     - Nimble-Snapshots/Core (= 6.3.0)
@@ -12,6 +13,7 @@ PODS:
     - FBSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
   - Quick (1.2.0)
+  - Sync (4.0.3)
 
 DEPENDENCIES:
   - FBSnapshotTestCase (~> 2.1.4)
@@ -26,10 +28,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
-  LaravelConnect: 465c4affff90b5de2649ede6f0009decb7a6985a
+  LaravelConnect: ba7d63c57450191e980c321f2ed7270e98f6fbc2
   Nimble: bfe1f814edabba69ff145cb1283e04ed636a67f2
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+  Sync: 0490b72e3322ba86095f603d7230bec36749f249
 
 PODFILE CHECKSUM: b8489592dd1bf7f424e1ae980fd9876089453f0f
 

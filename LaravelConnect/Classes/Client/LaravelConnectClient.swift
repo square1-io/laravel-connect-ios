@@ -20,7 +20,9 @@ class LaravelConnectClient: NSObject {
         
     }
     
-    private func get(){}
+    private func get(){
+        
+    }
     
     private func post(){}
     

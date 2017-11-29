@@ -10,7 +10,11 @@ import UIKit
 class LaravelRequest: NSObject {
 
     func list(model:AnyClass) -> Void {
-        model.perform(
+       
+    }
+    
+    func refresh("job_type", id){
+        
     }
 }
 
