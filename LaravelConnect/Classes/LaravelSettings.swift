@@ -16,7 +16,7 @@ public protocol LaravelSettings {
     //array of the root path elements for the API ["api","v1"] => /api/v1/
     var apiRootPathSegments: [String] { get }
     
-    var cacheDisabled : Bool {get }
+    var cacheDisabled : Bool { get }
     
     var coreDataModelName : String { get }
 }
