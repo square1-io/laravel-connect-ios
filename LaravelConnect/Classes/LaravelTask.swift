@@ -7,8 +7,8 @@
 
 import Foundation
 
-protocol LaravelTask {
- 
+public protocol LaravelTask {
+
     func cancel()
     func start()
     

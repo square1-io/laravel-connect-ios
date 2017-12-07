@@ -25,7 +25,7 @@ public class ModelList : NSObject {
         
         if(self.currentPage.hasNext){
             request.setPage(page: self.currentPage.nextPage)
-            self.lastTask = LaravelConnect.execute(request: request)
+            self.lastTask = LaravelConnect.sharedInstance.execute(request: request)
             return true
         }
         

@@ -19,7 +19,7 @@ extension NSManagedObject  {
     
 
     public static func list() -> ModelList{
-        return LaravelConnect.list(model: self)
+        return LaravelConnect.sharedInstance.list(model: self)
     }
 }
 
