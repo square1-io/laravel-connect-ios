@@ -10,52 +10,41 @@ import CoreData
 
 public class LaravelConnect: NSObject {
     
-    private static var sInstance: LaravelConnect?
+    static let sharedInstance = LaravelConnect()
     
-    private let httpClient : LaravelConnectClient
-    private let settings: LaravelSettings
-    private let coreData: CoreDataManager
+    private var httpClient : LaravelConnectClient!
+    private var settings: LaravelSettings!
+    private var coreData: CoreDataManager!
     
-    private init(settings : LaravelSettings) {
-        self.settings = settings
-        
-        self.coreData = CoreDataManager(modelName: settings.coreDataModelName)
-        self.coreData.initCoreDataStack(completionClosure: {})
-        // create API client that will make all REST requests
-        self.httpClient = LaravelConnectClient(settings: settings)
-        
-        super.init()
+
+    public func setup(settings : LaravelSettings){
+      
+      guard self.settings == nil else {
+        return
+      }
+      
+      self.settings = settings
+      self.coreData = CoreDataManager(modelName: settings.coreDataModelName)
+      self.coreData.initCoreDataStack(completionClosure: {})
+      // create API client that will make all REST requests
+      self.httpClient = LaravelConnectClient(settings: settings)
+
+      // init Auth
+      Auth.setup(laravelConnect:self)
     }
-    
-    public class func setup(settings : LaravelSettings){
-        
-        let laravelConnect = LaravelConnect(settings: settings)
-        sInstance = laravelConnect
-        
-        // init Auth 
-        Auth.setup(laravelConnect:laravelConnect)
-    }
-    
-    
-    public static func list<T: NSManagedObject>(model: T.Type) -> ModelList{
-        return (sInstance?._list(model: model))!
-    }
-    
-    static func execute(request: LaravelRequest) -> LaravelTask{
-        return (sInstance?._execute(request:request))!
-    }
-    
-    private func _execute(request: LaravelRequest) -> LaravelTask{
+  
+
+    public func execute(request: LaravelRequest) -> LaravelTask {
         let task = self.httpClient.buildLaravelTask(request: request)
         task.start()
         return task
     }
     
-    private func _list<T: NSManagedObject>(model: T.Type) -> ModelList{
-        return ModelList(request: self._prepareConnectRequest(model: model))
+    public func list<T: NSManagedObject>(model: T.Type) -> ModelList{
+        return ModelList(request: self.prepareConnectRequest(model: model))
     }
     
-    private func _prepareConnectRequest<T: NSManagedObject>(model: T.Type) -> LaravelRequest!
+    private func prepareConnectRequest<T: NSManagedObject>(model: T.Type) -> LaravelRequest!
     {
         guard let modelPath = self._pathForModelClass(model: model) else {
             return nil

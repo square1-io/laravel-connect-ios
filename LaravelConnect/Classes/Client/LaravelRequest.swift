@@ -9,18 +9,18 @@ import Foundation
 
 //Transform the binary data received during an http request to
 // a manageable format such as JSON or an Image
-typealias ParseDataBlock = (_ : Data?) -> Any?
+public typealias ParseDataBlock = (_ : Data?) -> Any?
 
 //called if request was successfull with the data from ParseDataBlock
-typealias SuccessBlock = (_ : Any?) -> Void
+public typealias SuccessBlock = (_ : Any?) -> Void
 
 //Handle request Errors
-typealias ErrorBlock = (_ : Error?) -> Void
+public typealias ErrorBlock = (_ : Error?) -> Void
 
 
-class LaravelRequest: NSObject {
+public class LaravelRequest: NSObject {
     
-    enum Method: String {
+    public enum Method: String {
        case GET = "GET", POST = "POST" , DELETE = "DELETE"
     }
 
@@ -97,7 +97,7 @@ class LaravelRequest: NSObject {
     }
     
     public func execute() -> LaravelTask{
-        return LaravelConnect.execute(request: self)
+        return LaravelConnect.sharedInstance.execute(request: self)
     }
 }
 
