@@ -11,17 +11,15 @@ class Auth: NSObject {
     
     private static var sInstance : Auth!
 
-    var laravel : LaravelConnectClient
-    var settings : LaravelSettings
+    var laravelConnect : LaravelConnect
     
-    private init(laravel : LaravelConnectClient, settings : LaravelSettings) {
-        self.laravel = laravel
-        self.settings = settings;
+    private init(laravelConnect : LaravelConnect) {
+        self.laravelConnect = laravelConnect
     }
     
     
-    public class func setup(client : LaravelConnectClient, settings: LaravelSettings){
-        sInstance = Auth(laravel:client, settings: settings)
+    public class func setup(laravelConnect : LaravelConnect){
+        sInstance = Auth(laravelConnect:laravelConnect)
     }
 
 }
