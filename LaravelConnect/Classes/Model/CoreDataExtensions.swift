@@ -62,7 +62,7 @@ public class LaravelModelFactory {
         let properties = entityDescription.propertiesByName as! [String : NSPropertyDescription]
         for (name, property) in properties {
             let value = json[property.jsonKey]
-            currentObject?.setValue(value, forKey: name)
+            currentObject?.setValue(value, forKey:name)
         }
         
         //do the same on relationships
