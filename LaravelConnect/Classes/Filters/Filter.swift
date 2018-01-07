@@ -1,5 +1,5 @@
 //
-//  Filter.swift
+//  FilterCollection.swift
 //  LaravelConnect
 //
 //  Created by Roberto Prato on 19/12/2017.
@@ -7,74 +7,80 @@
 
 import Foundation
 
-/**
- "filter[0][medias.event_id][equal][0]": eventId,
- "filter[0][medias.event_id][equal][1]": 5,
- "filter[0][id][equal][1]": 52323,
- "filter[1][medias.event_id][equal][0]": 666,
- "filter[1][medias.event_id][equal][1]": 666,
- "filter[1][id][equal][1]": 52323
- **/
-
 public class Filter : NSObject {
     
-    var criterias : Dictionary<String,  Dictionary<String, Array<Criteria>>>
+    var filters : Array<CriteriaCollection> = []
     
     public override init() {
-        self.criterias = Dictionary()
+        super.init()
+        self.filters.append(CriteriaCollection())
     }
     
-    public func addCriteria(criteria: Criteria){
-        
-        var list = self.criterias[criteria.key]
-        
-        if(list == nil){
-            list = Dictionary();
-            self.criterias[criteria.key] = list;
+    private var current: CriteriaCollection! {
+        get {
+            return self.filters.last
         }
-        
-        var verbs = list![criteria.verb]
-        
-        if(verbs == nil){
-            verbs = Array();
-            list![criteria.verb] = verbs
-        }
-
-        verbs?.append(criteria)
     }
     
-    public func serialise() -> Array<String> {
+    public func or() -> Filter {
+        self.filters.append(CriteriaCollection())
+        return self
+    }
+    
+    public func contains(param: String, value: String)  -> Filter {
+        self.current.contains(param: param, value: value)
+        return self
+    }
+    
+    public func equal(param: String, value: String)  -> Filter {
+        self.current.equal(param: param, value: value)
+        return self
+    }
+    
+    public func notEqual(param: String, value: String) -> Filter{
+        self.current.notEqual(param: param, value: value)
+        return self
+    }
+    
+    public func greatherThan(param: String, value: String) -> Filter{
+        self.current.greatherThan(param: param, value: value)
+        return self
+    }
+    
+    public func lowerThan(param: String, value: String) -> Filter{
+        self.current.lowerThan(param: param, value: value)
+        return self
+    }
+    
+    public func lowerThanOrEqual(param: String, value: String) -> Filter{
+        self.current.lowerThanOrEqual(param: param, value: value)
+        return self
+    }
+    
+    public func greatherThanOrEqual(param: String, value: String) -> Filter{
+        self.current.greatherThanOrEqual(param: param, value: value)
+        return self
+    }
+    
+    public func serialise(param: String) -> Array<String> {
         
-        var serialised = Array<String>()
+        var collections = Array<String>()
         
-        for (key, criterias) in self.criterias {
+        var index : Int = 0
+        
+        for filter in self.filters {
             
-            let criteriasList = self.serializeCriteriaCollection(criterias: criterias)
+            let serialisedFilters = filter.serialise()
             
-            for index in (0 ..< criteriasList.count) {
-                let value : String = criteriasList[index]
-                serialised.append(key + "[\(index)]" + value)
+            for ser in serialisedFilters {
+                let currentFilter = "\(param)[\(index)]" + ser
+                collections.append(currentFilter)
             }
+            
+            index = index + 1
         }
         
-        return serialised
-    }
-    
-    private func serializeCriteriaCollection(criterias: Dictionary<String, Array<Criteria>>) -> Array<String>{
-        
-        var serialised = Array<String>()
-        
-        for (key, list) in criterias {
-            
-            //let criteriasList = self.serializeCriteriaCollection(criterias: criterias)
-            
-            for  index in (0 ..< list.count){
-                serialised.append(key+"[\(index)]"+list[index].value)
-            }
-        }
-        
-        return serialised
-        
+        return collections
     }
     
 }

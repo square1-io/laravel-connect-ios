@@ -16,7 +16,7 @@ let LOWERTHAN = "lowerthan";
 let GREATERTHANOREQUAL = "greaterthanorequal";
 let LOWERTHANOREQUAL = "lowerthanorequal";
 
-public class Criteria : NSObject {
+ class Criteria : NSObject {
     
     public let param: String
     let relation: String?
@@ -33,13 +33,16 @@ public class Criteria : NSObject {
     }
     
     convenience init(param:String, verb:String, value:String) {
-        self.init(param: param, verb: verb, value:value, relation: "")
+        let components = param.components(separatedBy: ".")
+        self.init(param: components.last!, verb: verb,
+                  value:value,
+                  relation: (components.count > 1 ? components[0] : ""))
     }
     
     public var key: String {
         
         get {
-            if(relation != nil) {
+            if((relation?.isEmpty)! == false) {
                 return relation! + "." + param
             }
             return param
