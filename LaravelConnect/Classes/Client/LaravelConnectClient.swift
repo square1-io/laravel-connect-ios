@@ -1,12 +1,31 @@
+// Copyright © 2017 Square1.
 //
-//  LaravelConnectClient.swift
-//  LaravelConnect
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 //
 //  Created by Roberto Prato on 19/11/2017.
 //
 
 
 import Foundation
+import Square1CoreData
+import Square1Network
+import CoreData
 
 class HttpTask: LaravelTask {
     
@@ -26,20 +45,17 @@ class HttpTask: LaravelTask {
   
 }
 
-class LaravelConnectClient: NSObject {
+class LaravelConnectClient {
     
-    let settings : LaravelSettings
-    let session : URLSession
+    private let coredata: CoreDataManager?
+    let settings: LaravelSettings
+    let session: URLSession
     
-    public init(settings: LaravelSettings){
+    public init(settings: LaravelSettings, coredata: CoreDataManager){
         self.settings = settings
-        self.session = LaravelConnectClient.setupURLSession(settings: settings)
+        self.coredata = coredata
         
-        super.init()
-    }
-    
-    private class func setupURLSession(settings: LaravelSettings) -> URLSession {
-        
+        //setup default session
         var sessionConfiguration : URLSessionConfiguration
         
         if(settings.cacheDisabled){
@@ -48,85 +64,32 @@ class LaravelConnectClient: NSObject {
             sessionConfiguration = .default
         }
         
-        return URLSession(configuration: sessionConfiguration)
+        
+        self.session = URLSession(configuration: sessionConfiguration)
     }
     
-    public func buildLaravelTask(request: LaravelRequest) -> LaravelTask {
+    private func newRequest(method: HTTPMethod = HTTPMethod.GET) -> LaravelRequest? {
         
-        let httpRequest = self.buildURLRequest(request: request)
+        return LaravelRequest(method: method,
+                              scheme: settings.httpScheme,
+                              host: settings.apiHost,
+                              session: self.session)
         
-        let dataTask = self.buildDataTask(request: httpRequest,
-                                successHandler: request.successHandler!,
-                                dataHandler: request.parseDataBlock!,
-                                errorHandler: request.errorHandler!)
-        
-        return HttpTask(sessionTask: dataTask)
     }
-    
-    private func buildDataTask(request: URLRequest,
-                                    successHandler: @escaping SuccessBlock,
-                                    dataHandler: @escaping ParseDataBlock,
-                                    errorHandler: @escaping ErrorBlock) -> URLSessionDataTask{
+
+    public func newModelList(model: NSManagedObject.Type, relation: String = "") -> LaravelRequest {
         
-        let dataTask : URLSessionDataTask = self.session.dataTask(with: request, completionHandler:
-        { (data: Data?, response: URLResponse?, error: Error?) in
-            
-            if let error = error {
-                errorHandler(error)
-                return
-            }
-            
-            if let _ = response ,
-                let parsedData = dataHandler(data) {//parse NSData to Json
-                successHandler(parsedData)//parse the JSON
-            }else { //  the data format is incorrect or there is no data
-                let dataError = NSError(domain: "json.data.format", code: -100, userInfo: nil);
-                errorHandler(dataError)
-            }
-        })
+        let request = self.newRequest()
         
-        return dataTask
-    }
-    
-    
-    //given a LaravelRequest builds the URLComponents for the Http DataTask
-    private func buildURLRequest(request: LaravelRequest)-> URLRequest {
-        
-        var components: URLComponents = URLComponents()
-        
-        components.scheme = request.scheme
-        components.host = request.host
-        
-        //build path
-        var path: String = ""
-        for segment in request.pathComponents {
-            
-            let safeSegment : String = segment.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-            if(safeSegment.isEmpty == false){
-                path.append("/")
-                path.append(safeSegment)
-            }
-        }
-        components.path = path
-        
-        //any query parameter?
-        for (name,value) in request.queryParameters {
-            let item = URLQueryItem(name: name, value: value)
-            components.queryItems?.append(item)
+        if let modelPah = self.coredata?.pathForModel(model: model) {
+            request?.addPathSegment(segment: modelPah)
         }
         
-        var httpRequest :URLRequest = URLRequest(url: components.url!)
-        
-        //set the method
-        httpRequest.httpMethod = request.method.rawValue
-        
-        //now set the headers
-        for (name,value) in request.requestHeaders {
-            httpRequest.addValue(value, forHTTPHeaderField: name)
+        if relation.count > 0 {
+            request?.addPathSegment(segment: relation)
         }
         
-        return httpRequest
+        return request!
     }
-    
     
 }

@@ -62,7 +62,7 @@ class CoreDataManager : NSObject {
      The context for the main queue. Please do not use this to mutate data, use `performInNewBackgroundContext`
      instead.
      */
-    @objc public lazy var mainContext: NSManagedObjectContext = {
+    @objc public lazy var viewContext: NSManagedObjectContext = {
         let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         context.undoManager = nil
         context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
@@ -73,12 +73,20 @@ class CoreDataManager : NSObject {
         return context
     }()
 
-    public func entityDescriptionForClass<T: NSManagedObject>(model: T.Type, context: NSManagedObjectContext) -> NSEntityDescription? {
+    public func entityDescriptionForClass(model: NSManagedObject.Type, context: NSManagedObjectContext) -> NSEntityDescription? {
         return self.entityDescription(entityName: NSStringFromClass(model) , context: context)
     }
     
     public func entityDescription(entityName: String, context: NSManagedObjectContext) -> NSEntityDescription? {
         return NSEntityDescription.entity(forEntityName: entityName, in: context)
+    }
+    
+    public func pathForModel(model: NSManagedObject.Type) -> String {
+        let entity = self.entityDescriptionForClass(model: model, context: self.viewContext)
+        if let entity = entity {
+            return entity.modelPath
+        }
+        return ""
     }
     
 }

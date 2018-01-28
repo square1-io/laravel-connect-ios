@@ -15,21 +15,15 @@
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
-		62C93BFA1FD3FCBA007E7419 /* JobType+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BEB1FD3FCBA007E7419 /* JobType+CoreDataClass.swift */; };
-		62C93BFB1FD3FCBA007E7419 /* JobPayment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BEC1FD3FCBA007E7419 /* JobPayment+CoreDataClass.swift */; };
-		62C93BFC1FD3FCBA007E7419 /* Device+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BED1FD3FCBA007E7419 /* Device+CoreDataClass.swift */; };
-		62C93BFD1FD3FCBA007E7419 /* Skill+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BEE1FD3FCBA007E7419 /* Skill+CoreDataClass.swift */; };
-		62C93BFE1FD3FCBA007E7419 /* JobAvailability+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BEF1FD3FCBA007E7419 /* JobAvailability+CoreDataClass.swift */; };
-		62C93BFF1FD3FCBA007E7419 /* JobQuotation+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF01FD3FCBA007E7419 /* JobQuotation+CoreDataClass.swift */; };
-		62C93C001FD3FCBA007E7419 /* sample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF11FD3FCBA007E7419 /* sample.xcdatamodeld */; };
-		62C93C011FD3FCBA007E7419 /* ProfessionalReview+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF31FD3FCBA007E7419 /* ProfessionalReview+CoreDataClass.swift */; };
-		62C93C021FD3FCBA007E7419 /* JobImage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF41FD3FCBA007E7419 /* JobImage+CoreDataClass.swift */; };
-		62C93C031FD3FCBA007E7419 /* Job+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF51FD3FCBA007E7419 /* Job+CoreDataClass.swift */; };
-		62C93C041FD3FCBA007E7419 /* JobQuotationMessage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF61FD3FCBA007E7419 /* JobQuotationMessage+CoreDataClass.swift */; };
-		62C93C051FD3FCBA007E7419 /* Professional+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF71FD3FCBA007E7419 /* Professional+CoreDataClass.swift */; };
-		62C93C061FD3FCBA007E7419 /* Keyword+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF81FD3FCBA007E7419 /* Keyword+CoreDataClass.swift */; };
-		62C93C071FD3FCBA007E7419 /* User+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93BF91FD3FCBA007E7419 /* User+CoreDataClass.swift */; };
+		620A95A1201C9BDD0090FAB4 /* laravel_connect.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 620A959F201C9BDD0090FAB4 /* laravel_connect.xcdatamodeld */; };
 		62C93C091FD3FD9E007E7419 /* SampleAppConnectSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C93C081FD3FD9E007E7419 /* SampleAppConnectSettings.swift */; };
+		62F3002C201148C50035A2FF /* Continent+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F30023201148C50035A2FF /* Continent+CoreDataClass.swift */; };
+		62F3002D201148C50035A2FF /* Phone+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F30024201148C50035A2FF /* Phone+CoreDataClass.swift */; };
+		62F3002E201148C50035A2FF /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 62F30025201148C50035A2FF /* README.md */; };
+		62F3002F201148C50035A2FF /* Language+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F30026201148C50035A2FF /* Language+CoreDataClass.swift */; };
+		62F30030201148C50035A2FF /* Country+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F30027201148C50035A2FF /* Country+CoreDataClass.swift */; };
+		62F30032201148C50035A2FF /* User+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F3002A201148C50035A2FF /* User+CoreDataClass.swift */; };
+		62F30033201148C50035A2FF /* City+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F3002B201148C50035A2FF /* City+CoreDataClass.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,21 +52,15 @@
 		607FACE51AFB9204008FA782 /* LaravelConnect_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LaravelConnect_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
-		62C93BEB1FD3FCBA007E7419 /* JobType+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "JobType+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BEC1FD3FCBA007E7419 /* JobPayment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "JobPayment+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BED1FD3FCBA007E7419 /* Device+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Device+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BEE1FD3FCBA007E7419 /* Skill+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Skill+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BEF1FD3FCBA007E7419 /* JobAvailability+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "JobAvailability+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF01FD3FCBA007E7419 /* JobQuotation+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "JobQuotation+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF21FD3FCBA007E7419 /* fixers.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = fixers.xcdatamodel; sourceTree = "<group>"; };
-		62C93BF31FD3FCBA007E7419 /* ProfessionalReview+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ProfessionalReview+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF41FD3FCBA007E7419 /* JobImage+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "JobImage+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF51FD3FCBA007E7419 /* Job+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Job+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF61FD3FCBA007E7419 /* JobQuotationMessage+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "JobQuotationMessage+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF71FD3FCBA007E7419 /* Professional+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Professional+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF81FD3FCBA007E7419 /* Keyword+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Keyword+CoreDataClass.swift"; sourceTree = "<group>"; };
-		62C93BF91FD3FCBA007E7419 /* User+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "User+CoreDataClass.swift"; sourceTree = "<group>"; };
+		620A95A0201C9BDD0090FAB4 /* laravel_connect.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = laravel_connect.xcdatamodel; sourceTree = "<group>"; };
 		62C93C081FD3FD9E007E7419 /* SampleAppConnectSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleAppConnectSettings.swift; sourceTree = "<group>"; };
+		62F30023201148C50035A2FF /* Continent+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Continent+CoreDataClass.swift"; sourceTree = "<group>"; };
+		62F30024201148C50035A2FF /* Phone+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Phone+CoreDataClass.swift"; sourceTree = "<group>"; };
+		62F30025201148C50035A2FF /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		62F30026201148C50035A2FF /* Language+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Language+CoreDataClass.swift"; sourceTree = "<group>"; };
+		62F30027201148C50035A2FF /* Country+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Country+CoreDataClass.swift"; sourceTree = "<group>"; };
+		62F3002A201148C50035A2FF /* User+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "User+CoreDataClass.swift"; sourceTree = "<group>"; };
+		62F3002B201148C50035A2FF /* City+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "City+CoreDataClass.swift"; sourceTree = "<group>"; };
 		74F48EB31A290B3E4BEA2AE9 /* Pods-LaravelConnect_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaravelConnect_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-LaravelConnect_Tests/Pods-LaravelConnect_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		81B58C8C22ADC5E5A245F099 /* Pods-LaravelConnect_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaravelConnect_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LaravelConnect_Example/Pods-LaravelConnect_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		DAECE4CA41C4628AA424C777 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -132,7 +120,7 @@
 		607FACD21AFB9204008FA782 /* Example for LaravelConnect */ = {
 			isa = PBXGroup;
 			children = (
-				62C93BEA1FD3FCBA007E7419 /* auto_generated */,
+				62F30021201148C50035A2FF /* submodules */,
 				62C93C081FD3FD9E007E7419 /* SampleAppConnectSettings.swift */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
@@ -180,25 +168,27 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
-		62C93BEA1FD3FCBA007E7419 /* auto_generated */ = {
+		62F30021201148C50035A2FF /* submodules */ = {
 			isa = PBXGroup;
 			children = (
-				62C93BEB1FD3FCBA007E7419 /* JobType+CoreDataClass.swift */,
-				62C93BEC1FD3FCBA007E7419 /* JobPayment+CoreDataClass.swift */,
-				62C93BED1FD3FCBA007E7419 /* Device+CoreDataClass.swift */,
-				62C93BEE1FD3FCBA007E7419 /* Skill+CoreDataClass.swift */,
-				62C93BEF1FD3FCBA007E7419 /* JobAvailability+CoreDataClass.swift */,
-				62C93BF01FD3FCBA007E7419 /* JobQuotation+CoreDataClass.swift */,
-				62C93BF11FD3FCBA007E7419 /* sample.xcdatamodeld */,
-				62C93BF31FD3FCBA007E7419 /* ProfessionalReview+CoreDataClass.swift */,
-				62C93BF41FD3FCBA007E7419 /* JobImage+CoreDataClass.swift */,
-				62C93BF51FD3FCBA007E7419 /* Job+CoreDataClass.swift */,
-				62C93BF61FD3FCBA007E7419 /* JobQuotationMessage+CoreDataClass.swift */,
-				62C93BF71FD3FCBA007E7419 /* Professional+CoreDataClass.swift */,
-				62C93BF81FD3FCBA007E7419 /* Keyword+CoreDataClass.swift */,
-				62C93BF91FD3FCBA007E7419 /* User+CoreDataClass.swift */,
+				62F30022201148C50035A2FF /* ios-connect-demo-api-client */,
 			);
-			path = auto_generated;
+			path = submodules;
+			sourceTree = SOURCE_ROOT;
+		};
+		62F30022201148C50035A2FF /* ios-connect-demo-api-client */ = {
+			isa = PBXGroup;
+			children = (
+				620A959F201C9BDD0090FAB4 /* laravel_connect.xcdatamodeld */,
+				62F30023201148C50035A2FF /* Continent+CoreDataClass.swift */,
+				62F30024201148C50035A2FF /* Phone+CoreDataClass.swift */,
+				62F30025201148C50035A2FF /* README.md */,
+				62F30026201148C50035A2FF /* Language+CoreDataClass.swift */,
+				62F30027201148C50035A2FF /* Country+CoreDataClass.swift */,
+				62F3002A201148C50035A2FF /* User+CoreDataClass.swift */,
+				62F3002B201148C50035A2FF /* City+CoreDataClass.swift */,
+			);
+			path = "ios-connect-demo-api-client";
 			sourceTree = "<group>";
 		};
 		8BEDBB2B40AC6060759725DF /* Pods */ = {
@@ -303,6 +293,7 @@
 			files = (
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
+				62F3002E201148C50035A2FF /* README.md in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,11 +406,17 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-LaravelConnect_Example/Pods-LaravelConnect_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/LaravelConnect/LaravelConnect.framework",
+				"${BUILT_PRODUCTS_DIR}/Square1CoreData/Square1CoreData.framework",
+				"${BUILT_PRODUCTS_DIR}/Square1Network/Square1Network.framework",
+				"${BUILT_PRODUCTS_DIR}/Square1Tools/Square1Tools.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LaravelConnect.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Square1CoreData.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Square1Network.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Square1Tools.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -434,23 +431,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				62C93BFE1FD3FCBA007E7419 /* JobAvailability+CoreDataClass.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
-				62C93C011FD3FCBA007E7419 /* ProfessionalReview+CoreDataClass.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
-				62C93C041FD3FCBA007E7419 /* JobQuotationMessage+CoreDataClass.swift in Sources */,
-				62C93C031FD3FCBA007E7419 /* Job+CoreDataClass.swift in Sources */,
+				62F3002D201148C50035A2FF /* Phone+CoreDataClass.swift in Sources */,
+				62F3002C201148C50035A2FF /* Continent+CoreDataClass.swift in Sources */,
+				62F30033201148C50035A2FF /* City+CoreDataClass.swift in Sources */,
+				62F30032201148C50035A2FF /* User+CoreDataClass.swift in Sources */,
+				62F30030201148C50035A2FF /* Country+CoreDataClass.swift in Sources */,
 				62C93C091FD3FD9E007E7419 /* SampleAppConnectSettings.swift in Sources */,
-				62C93C051FD3FCBA007E7419 /* Professional+CoreDataClass.swift in Sources */,
-				62C93BFF1FD3FCBA007E7419 /* JobQuotation+CoreDataClass.swift in Sources */,
-				62C93C071FD3FCBA007E7419 /* User+CoreDataClass.swift in Sources */,
-				62C93C021FD3FCBA007E7419 /* JobImage+CoreDataClass.swift in Sources */,
-				62C93C001FD3FCBA007E7419 /* sample.xcdatamodeld in Sources */,
-				62C93BFD1FD3FCBA007E7419 /* Skill+CoreDataClass.swift in Sources */,
-				62C93BFC1FD3FCBA007E7419 /* Device+CoreDataClass.swift in Sources */,
-				62C93BFA1FD3FCBA007E7419 /* JobType+CoreDataClass.swift in Sources */,
-				62C93BFB1FD3FCBA007E7419 /* JobPayment+CoreDataClass.swift in Sources */,
-				62C93C061FD3FCBA007E7419 /* Keyword+CoreDataClass.swift in Sources */,
+				620A95A1201C9BDD0090FAB4 /* laravel_connect.xcdatamodeld in Sources */,
+				62F3002F201148C50035A2FF /* Language+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -692,13 +682,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		62C93BF11FD3FCBA007E7419 /* sample.xcdatamodeld */ = {
+		620A959F201C9BDD0090FAB4 /* laravel_connect.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				62C93BF21FD3FCBA007E7419 /* fixers.xcdatamodel */,
+				620A95A0201C9BDD0090FAB4 /* laravel_connect.xcdatamodel */,
 			);
-			currentVersion = 62C93BF21FD3FCBA007E7419 /* fixers.xcdatamodel */;
-			path = sample.xcdatamodeld;
+			currentVersion = 620A95A0201C9BDD0090FAB4 /* laravel_connect.xcdatamodel */;
+			path = laravel_connect.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

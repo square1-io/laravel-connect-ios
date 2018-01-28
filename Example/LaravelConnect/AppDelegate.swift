@@ -8,6 +8,7 @@
 
 import UIKit
 import LaravelConnect
+import CoreData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -18,11 +19,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         // Override point for customization after application launch.
-        //LaravelConnect.setup(settings: SampleAppConnectSettings());
+        LaravelConnect.configure(settings: SampleAppConnectSettings(), onCompletion: {
+         
+            var filter = Filter().contains(param: "medias.event_id", value: "1")
+                .contains(param: "medias.event_id", value: "2")
+                .contains(param: "medias.event_id", value: "3")
+                .or()
+                .equal(param: "id", value: "33")
+            
+            let list = City.list(filter: filter)
+            
+            
+        });
     
-     //   let skills = Skill.list();
-        
-        var filter = Filter()
+      
         
 //        //**
 //        "filter[0][medias.event_id][equal][0]": eventId,
@@ -32,14 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        "filter[1][medias.event_id][equal][1]": 666,
 //        "filter[1][id][equal][1]": 52323
         
-        var res = filter.contains(param: "medias.event_id", value: "1")
-            .contains(param: "medias.event_id", value: "2")
-            .contains(param: "medias.event_id", value: "3")
-            .or()
-            .equal(param: "id", value: "33")
-            .serialise(param: "filter");
-        
-        print(res)
         return true
     }
 

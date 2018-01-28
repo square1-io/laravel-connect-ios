@@ -1,0 +1,3 @@
+[submodule "Example/submodules/ios-connect-demo-api-client"]
+	path = Example/submodules/ios-connect-demo-api-client
+	url = git@github.com:square1-io/ios-connect-demo-api-client.git

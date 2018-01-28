@@ -11,11 +11,11 @@ import LaravelConnect
 
 public class SampleAppConnectSettings : NSObject, LaravelSettings {
     
-    public let apiHost: String = ""
+    public let apiHost: String = "connect-demo.mobile1.io"
     public let cacheDisabled: Bool = true
-    public let coreDataModelName = "sample"
+    public let coreDataModelName = "laravel_connect"
     public let httpScheme: String = "http"
-    public let apiRootPathSegments: [String] = []
+    public let apiRootPathSegments: [String] = ["square1", "connect"]
 
  
 }
