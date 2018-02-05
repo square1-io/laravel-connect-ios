@@ -22,30 +22,123 @@
 //
 
 import Foundation
+import CoreData
 
-
-public class ModelList : NSObject {
+public struct ModelListIterator: IteratorProtocol {
     
+    private var ids:[Int64]
+    public private(set) var items:Dictionary<Int64, ConnectModel>
+
+    var currentIndex = 0
+    
+    init(ids:[Int64],items:Dictionary<Int64, ConnectModel>) {
+       self.items = items
+       self.ids = ids
+    }
+    
+    mutating public func next() -> ConnectModel? {
+        let nextIndex = currentIndex + 1
+        guard nextIndex < self.ids.count
+            else { return nil }
+        
+        currentIndex = nextIndex
+        let currentId = self.ids[currentIndex]
+        return self.items[currentId]
+    }
+}
+
+public class ModelList : NSObject, Sequence {
+    
+
     private let request: LaravelRequest
     private let filter: Filter
-    private var currentPage: Pagination
+    private var ids:[Int64]
+    private var items:Dictionary<Int64, ConnectModel>
+    private let entity:String
     
-    init(request: LaravelRequest, filter: Filter)  {
+    public var count: Int {
+        get  {
+            return self.ids.count
+        }
+    }
+    
+    public private(set) var currentPage: Pagination
+    
+    init(entity:String, request:LaravelRequest, filter:Filter)  {
+        self.entity = entity
         self.request = request
         self.filter = filter
+        self.ids = []
+        self.items = Dictionary()
         self.currentPage = Pagination.NOPAGE
         super.init()
     }
     
-    public func nextPage() -> Bool {
+    public func refresh(done:@escaping ([Int64]?, Error?) -> Void) {
+        self.ids.removeAll()
+        self.currentPage = Pagination.NOPAGE
+        self.nextPage(done: done)
+    }
+    
+    @discardableResult public func nextPage(done:@escaping ([Int64]?, Error?) -> Void) -> Bool {
         
-        if(self.currentPage.hasNext){
+        if(self.currentPage.hasNext && request.state != .Running){
+            
             request.setPage(page: self.currentPage.nextPage)
-           // self.lastTask = LaravelConnect.shared().execute(request: request)
+            
+            request.start(success: { (result) in
+                let response = result as! LaravelPaginatedModelResponse
+                self.handleSuccess(response:response)
+                done(response.ids, nil)
+            }, failure: { (error) in
+                self.handleFailure(error: error)
+                done(nil, error)
+            })
             return true
         }
         
         return false
         
+    }
+    
+    private func handleSuccess(response:LaravelPaginatedModelResponse) {
+        self.currentPage = response.page()!
+        self.ids.append(contentsOf:response.ids)
+        let array = self.reloadItems()
+        self.items = array.toDictionary(with: { $0.value(forKey: "id") as! Int64 })
+        
+    }
+    
+    private func handleFailure(error:Error) {
+        
+    }
+    
+    subscript(index: Int) -> ConnectModel? {
+        
+        guard index < self.ids.count else { return nil}
+        let currentId:Int64 = self.ids[index]
+        return self.items[currentId]
+    }
+    
+    public func makeIterator() -> ModelListIterator {
+        return ModelListIterator(ids: self.ids, items: self.items)
+    }
+    
+    private func reloadItems(context:NSManagedObjectContext = LaravelConnect.shared().coreData().viewContext) -> [ConnectModel] {
+       
+        do{
+            return try context.fetch(ids:self.ids, entityName:self.entity) as! [ConnectModel]
+        }
+        catch let error as NSError {
+#if DEBUG
+    print(error)
+#endif
+        }
+        
+        return []
+    }
+    
+    public func cancel() {
+        self.request.cancel()
     }
 }

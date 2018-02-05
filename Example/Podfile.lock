@@ -5,7 +5,7 @@ PODS:
   - FBSnapshotTestCase/SwiftSupport (2.1.4):
     - FBSnapshotTestCase/Core
   - LaravelConnect (0.1.0):
-    - Square1CoreData (~> 1.0.0)
+    - Square1CoreData (~> 1.0.2)
     - Square1Network (~> 1.0.0)
     - Square1Tools (~> 1.0.0)
     - Sync (~> 4.0)
@@ -16,10 +16,10 @@ PODS:
     - FBSnapshotTestCase (~> 2.0)
     - Nimble (~> 7.0)
   - Quick (1.2.0)
-  - Square1CoreData (1.0.0)
-  - Square1Network (1.0.0)
+  - Square1CoreData (1.0.2)
+  - Square1Network (1.0.1)
   - Square1Tools (1.0.1)
-  - Sync (4.0.3)
+  - Sync (4.1.1)
 
 DEPENDENCIES:
   - FBSnapshotTestCase (~> 2.1.4)
@@ -34,14 +34,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
-  LaravelConnect: 80de08c753bcb0b7a8120b47da734960ee6b01d4
+  LaravelConnect: 9b02ffa05a1cb1381c483b5ef7cdf78814bc4d1c
   Nimble: 7f5a9c447a33002645a071bddafbfb24ea70e0ac
   Nimble-Snapshots: f5459b5b091678dc942d03ec4741cacb58ba4a52
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
-  Square1CoreData: c51174dab10010abb44ee45194157ba361690f19
-  Square1Network: 13d054f9133ab18dc4103e25397b3b6172051c9c
+  Square1CoreData: 1247dba361fdf352289eca0d6e54441eff277f66
+  Square1Network: a0a8af91c6cbc91a69a0f65b9b6102bee380fe16
   Square1Tools: e5028af3116348c2307f2283210c5a52e3016519
-  Sync: 0490b72e3322ba86095f603d7230bec36749f249
+  Sync: e0f652f552935c63cbc911f588b3eebe70490402
 
 PODFILE CHECKSUM: 9b4b901a4a9ee89a81637688afd85c3d1cb548ec
 

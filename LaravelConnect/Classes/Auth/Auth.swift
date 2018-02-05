@@ -27,7 +27,7 @@ class Auth: NSObject {
     
     private static let PREF_AUTH_TOKEN = "PREF_AUTH_TOKEN";
     
-    private static var instance: Auth = {
+    public static var shared: Auth = {
         let instance = Auth(laravelConnect: LaravelConnect.shared())
         return instance
     }()
@@ -43,5 +43,6 @@ class Auth: NSObject {
     public func token() -> String? {
         return self.storage.string(forKey: Auth.PREF_AUTH_TOKEN)
     }
-
+    
+    
 }

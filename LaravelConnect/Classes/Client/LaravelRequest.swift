@@ -35,57 +35,136 @@ public typealias SuccessBlock = (_ : Any?) -> Void
 public typealias ErrorBlock = (_ : Error?) -> Void
 
 
-public struct LaravelResponse: JSONServiceResponse {
+
+public protocol LaravelServiceResponse: WebServiceResponse {
+   init(with dictionary: [String: Any])
+}
+
+public protocol LaravelServiceRequest: WebServiceRequest where Task: URLSessionDataTask, Response: LaravelServiceResponse {
+    func handleResponse(_ data: Data?, response: URLResponse?, error: NSError?) -> WebServiceResult<Response>
+}
+
+public extension LaravelServiceRequest {
+    var accept: MIMEType? { return .json }
     
-    public init(jsonObject: Decodable) {
+    @discardableResult
+    func executeInSession(_ session: URLSession? = URLSession.shared,
+                          completion: @escaping (WebServiceResult<Response>) -> ()) -> URLSessionDataTask? {
+        let request = createRequest() as URLRequest
         
+        let task = session!.dataTask(with: request) { data, response, error in
+            let result = self.handleResponse(data, response: response, error: error as NSError?)
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+        
+        task.resume()
+        return task
     }
 }
 
-public class LaravelRequest: JSONServiceRequest, LaravelTask {
+
+public class LaravelResponse: LaravelServiceResponse {
+
+    let data: [String : Any]
     
-    
-    public func cancel() {
-        
+    public required init(with dictionary: [String: Any]) {
+        self.data = dictionary["data"] as! [String : Any]
     }
+}
+
+public class LaravelPaginatedResponse: LaravelResponse {
     
-    public func start() {
-        
+    var pagination: Pagination?
+    
+    public required init(with dictionary: [String : Any]) {
+       super.init(with: dictionary)
+       self.pagination = Pagination(with: self.data["pagination"] as! [String : Any])
     }
+
+    public func page() -> Pagination? {
+        return pagination
+    }
+}
+
+public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     
-    
-    
-    public func execute(){
-        
+    public enum State {
+        case Idle
+        case Running
+        case Finished
+        case Failed
     }
     
     public typealias Response = LaravelResponse
     
+    public var accept: MIMEType? { return .json }
+
+    public private(set) var state:State
+    
+    public func cancel() {
+        self.task?.cancel()
+    }
+    
+    public func start(success:@escaping(LaravelResponse) -> (), failure:@escaping(Error) -> () ) {
+        self.state = .Running
+        self.task = executeInSession(self.session, completion: { (result) in
+            
+            switch (result) {
+            case .success(let response):
+                success(response)
+                break
+            case .failure(let error):
+                failure(error)
+            default:
+                break
+            }
+            
+        } )
+    }
+
     public private(set) var baseUrl: URL
     public private(set) var method: HTTPMethod
     public private(set) var path: Array<String>
-    public private(set) var headerParams: [HeaderItem]
-    public private(set) var queryParams: [URLQueryItem]
     
+    public var headerParams: [HeaderItem]  {
+            get { return Array(self.headersDictionary.values) }
+    }
+
+    public var queryParams: [URLQueryItem]  {
+        get { return Array(self.queryParamsDictionary.values) }
+    }
+    
+    private var headersDictionary: Dictionary<String,HeaderItem>
+    private var queryParamsDictionary: Dictionary<String,URLQueryItem>
     
     private let session: URLSession
+    private var task: Task?
+    private var responseType : Response.Type
+    private var responseFactory : LaravelResponseFactory
     
     init(method: HTTPMethod = HTTPMethod.GET,
           scheme: String = "http",
           host: String,
-          session: URLSession)  {
-        
+          session: URLSession,
+          responseType: Response.Type = LaravelPaginatedResponse.self)   {
+        self.state = .Idle
         self.method = method
         self.session = session
+        self.responseType = responseType
+        self.responseFactory = LaravelDefaultResponseFactory()
         self.baseUrl = URL(string: "\(scheme)://\(host)")!
         self.path = Array()
-        self.queryParams = Array()
-        self.headerParams = Array()
+        self.headersDictionary = Dictionary()
+        self.queryParamsDictionary = Dictionary()
         self.addRequestHeader(name:"Content-Type", value:"application/json")
         
     }
-    
-    
+
+    public func setResponseFactory(responseFactory: LaravelResponseFactory){
+        self.responseFactory = responseFactory
+    }
     public func addPathSegment(segment: String){
         self.path.append(segment)
     }
@@ -97,45 +176,72 @@ public class LaravelRequest: JSONServiceRequest, LaravelTask {
     }
     
     public func addQueryParameter(name:String, value:String){
-        self.queryParams.append(URLQueryItem(name:name, value:value))
+        self.queryParamsDictionary[name] = URLQueryItem(name:name, value:value)
     }
     
     public func addRequestHeader(name:String, value:String){
-        self.headerParams.append(HeaderItem(name:name, value:value))
+        self.headersDictionary[name] = HeaderItem(name:name, value:value)
     }
     
-    
-    public func handleResponse(_ data: Data?, response: URLResponse?, error: NSError?) -> WebServiceResult<LaravelResponse> {
+    public func handleResponse(_ data: Data?, response: URLResponse?, error: NSError?) -> WebServiceResult<Response> {
+        
         if let error = error {
+            self.state = .Failed
             return .failure(error)
         }
         
-        return .successNoData
+        guard let data = data else {
+            self.state = .Finished
+            return .successNoData
+        }
         
-        //        guard let data = data else {
-        //            return .successNoData
-        //        }
-        //
-        //        do {
-        //            let j = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-        //            print(j)
-        //
-        //            let decoder = JSONDecoder()
-        //            let json = try decoder.decode([Post].self, from: data)
-        //            let response = LaravelResponse(jsonObject: json)
-        //            return .success(response)
-        //        } catch let error as NSError {
-        //            return .failure(error)
-        //        }
-        
+        do{
+            
+#if DEBUG
+     let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+    print(json)
+#endif
+            let laravelResponse = try self.responseFactory.responseForData(data)
+            self.state = .Finished
+            return .success(laravelResponse)
+            
+        } catch let error as NSError {
+#if DEBUG
+    print(error)
+#endif
+            self.state = .Failed
+            return .failure(error)
+        }
+
     }
     
+    @discardableResult
+    public func executeInSession(_ session: URLSession? = URLSession.shared,
+                          completion: @escaping (WebServiceResult<Response>) -> ()) -> URLSessionDataTask? {
+        let request = createRequest() as URLRequest
+        
+        let task = session!.dataTask(with: request) { data, response, error in
+            let result = self.handleResponse(data, response: response, error: error as NSError?)
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+        
+        task.resume()
+        return task
+    }
 }
+
+
 
 extension LaravelRequest {
     
     public func setPage(page: Int) {
         self.addQueryParameter(name: "page", value: String(page))
     }
-    
+
 }
+
+
+
+

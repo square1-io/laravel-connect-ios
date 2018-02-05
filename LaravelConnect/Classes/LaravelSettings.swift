@@ -38,6 +38,23 @@ public protocol LaravelSettings {
     
     //name of the coreData model file
     var coreDataModelName : String { get }
+    
+    //api key header name
+    var apiKeyHeaderName: String { get }
+    
+    //api key value
+    var apiKeyValue: String { get }
+    
+    //date format
+    var laravelDateFormat: String { get }
 }
 
+public extension LaravelSettings {
+    
+    var apiKeyHeaderName: String { return "x-connect-api-key"}
+    
+    var apiKeyValue: String { return "" }
+    
+    var laravelDateFormat: String { return  "yyyy-MM-dd HH:mm:ss"}
+}
 

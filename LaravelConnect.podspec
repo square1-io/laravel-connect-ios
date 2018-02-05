@@ -31,15 +31,16 @@ TODO: Add long description of the pod here.
   s.ios.deployment_target = '10.0'
 
   s.source_files = 'LaravelConnect/Classes/**/*'
+  s.resource = 'LaravelConnect/Resources/**/*.{storyboard,xib}'
   
-  # s.resource_bundles = {
-  #   'LaravelConnect' => ['LaravelConnect/Assets/*.png']
-  # }
+  s.resource_bundles = {
+     'LaravelConnect' => ['LaravelConnect/Resources/**/*.{storyboard,xib}']
+   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
    s.dependency  'Sync', '~> 4.0'
-   s.dependency "Square1CoreData", "~> 1.0.0"
+   s.dependency "Square1CoreData", "~> 1.0.2"
    s.dependency "Square1Network", "~> 1.0.0"
    s.dependency "Square1Tools", "~> 1.0.0"
 end

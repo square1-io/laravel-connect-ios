@@ -26,6 +26,6 @@ import Foundation
 public protocol LaravelTask {
 
     func cancel()
-    func start()
+    func start(success:@escaping(LaravelResponse) -> (), failure:@escaping(Error) -> ())
     
 }

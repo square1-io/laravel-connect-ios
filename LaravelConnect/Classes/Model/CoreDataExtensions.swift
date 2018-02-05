@@ -31,13 +31,6 @@ let CONST_LARAVEL_JSON_PRIMARY_KEY = "laravel.json.primary.key"
 let CONST_LARAVEL_MODEL_PATH_KEY = "laravel.model.path"
 
 
-extension NSManagedObject  {
-    
-    public static func list(filter: Filter = Filter()) -> ModelList {
-        return LaravelConnect.shared().list(model: self, relation: "", filter: filter)
-    }
-}
-
 extension NSEntityDescription {
     
     var modelPath : String {return  self.userInfo?[CONST_LARAVEL_MODEL_PATH_KEY] as! String}
@@ -58,71 +51,81 @@ extension NSRelationshipDescription {
     var jsonForeignKey: String { return self.userInfo?[CONST_LARAVEL_JSON_FOREIGN_KEY] as! String }
 }
 
+open class ConnectModel: NSManagedObject, Managed {
+    
+    open override func awakeFromInsert() {
+        super.awakeFromInsert()
+        setupRelations()
+    }
+    
+    open override func awakeFromFetch() {
+        super.awakeFromFetch()
+        setupRelations()
+    }
+    
+    open func setupRelations() {
+        
+    }
+    
+    public var attributes:[String : NSAttributeDescription] {
 
-extension SQ1CoreDataManager {
- 
-    public func entityDescriptionForClass(model: NSManagedObject.Type, context: NSManagedObjectContext) -> NSEntityDescription? {
-        return self.entityDescription(entityName: NSStringFromClass(model) , context: context)
-    }
-    
-    public func entityDescription(entityName: String, context: NSManagedObjectContext) -> NSEntityDescription? {
-        return NSEntityDescription.entity(forEntityName: entityName, in: context)
-    }
-    
-    public func pathForModel(model: NSManagedObject.Type) -> String {
-        let entity = self.entityDescriptionForClass(model: model, context: self.viewContext)
-        if let entity = entity {
-            return entity.modelPath
+        get {
+           return  self.entity.attributesByName
         }
-        return ""
+    }
+    
+    public var oneRelations:[String : NSRelationshipDescription] {
+        
+        get {
+            return  self.entity.relationshipsByName
+        }
+    }
+    
+    public func setupRelation<T:ConnectRelation>(name:String) -> T {
+        let relations:[String : NSRelationshipDescription] = self.entity.relationshipsByName
+        return T(parent: self, description:relations[name]!)
+    }
+    
+    public static func list(filter: Filter = Filter(), include:[String] = []) -> ModelList {
+        return LaravelConnect.shared().list(model:self, relation:"", filter:filter, include:include)
+    }
+}
+
+public extension Array {
+    public func toDictionary<Key: Hashable>(with selectKey: (Element) -> Key) -> [Key:Element] {
+        var dict = [Key:Element]()
+        for element in self {
+            dict[selectKey(element)] = element
+        }
+        return dict
+    }
+}
+
+extension NSManagedObjectContext {
+    
+    public func fetch<T:NSManagedObject>(ids:Array<Int64>, entityName:String) throws -> [T]  {
+     
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        fetch.predicate =  NSPredicate(format: "id IN %@", ids)
+        let objects = try self.fetch(fetch) as! [T]
+        return objects
     }
     
 }
 
-public class LaravelModelFactory {
+extension Data {
     
-    public static func parseJson (json:[String:AnyObject], entityType:String, context:NSManagedObjectContext) -> NSManagedObject? {
-        let entityDescription = NSEntityDescription.entity(forEntityName: entityType, in: context);
-        return self.parseJson(json:json, entityType:entityType, context:context)
-    }
-    public static func parseJson (json:[String:AnyObject], entityDescription:NSEntityDescription, context:NSManagedObjectContext) -> NSManagedObject? {
-        //check if object is available in coreData already:
-        let uniqueKey = json[(entityDescription.jsonPrimaryKey)] as! NSNumber;
-        let currentObject : NSManagedObject? = nil ; // fetch by uniqueKey context.fetch(<#T##request: NSFetchRequest<NSFetchRequestResult>##NSFetchRequest<NSFetchRequestResult>#>)
-        
-        if(currentObject == nil){
-            /// create one
+    public func toJSON() -> Dictionary<String,Any>  {
+        do{
+            let json: Dictionary<String,Any> = try JSONSerialization.jsonObject(with: self, options: .allowFragments) as! Dictionary
+            return json
+        } catch let _ as NSError {
+            return Dictionary()
         }
-        
-        let properties = entityDescription.propertiesByName as! [String : NSPropertyDescription]
-        for (name, property) in properties {
-            let value = json[property.jsonKey]
-            currentObject?.setValue(value, forKey:name)
-        }
-        
-        //do the same on relationships
-        let relations = entityDescription.relationshipsByName as! [String : NSRelationshipDescription]
-        for (name, relation) in relations {
-            let value = json[relation.jsonKey]
-            if(relation.isToMany == false){
-                
-                // check if I have the full json ?
-                if((json[relation.jsonKey]) != nil){
-                    
-                }else if((json[relation.jsonForeignKey]) != nil) {
-                    //
-                    
-                }
-                
-                let relatedObject = self.parseJson(json: value as! [String : AnyObject], entityDescription:relation.destinationEntity!, context:context)
-                currentObject?.setValue(value, forKey: name)
-            }
-            
-        }
-        
-        return currentObject;
     }
     
 }
+
+
 
 

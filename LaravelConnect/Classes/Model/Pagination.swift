@@ -24,19 +24,28 @@
 import Foundation
 
 
-public struct Pagination : Codable {
+public struct Pagination: Decodable {
     
-    static let NOPAGE = Pagination(currentPage: 0, total: 0, perPage: 15)
+    static let NOPAGE = Pagination(currentPage: 0, total: -1, perPage: 15)
     
+
     enum CodingKeys: String, CodingKey {
         case currentPage = "current_page"
         case total = "total"
         case perPage = "per_page"
+        case lastPage = "last_page"
     }
     
-    public var currentPage: Int
-    public var total: Int = -1
-    public var perPage: Int
+    public let currentPage: Int
+    public let total: Int 
+    public let perPage: Int
+    public let lastPage: Int
+    
+    public var valid: Bool {
+        get {
+            return self.total >= 0
+        }
+    }
     
     public var nextPage: Int {
         get {
@@ -51,10 +60,24 @@ public struct Pagination : Codable {
             return count + ((mod > 0) ? 1 : 0)
         }
     }
+
+    public init(currentPage:Int = 0, total:Int = -1, perPage:Int = 15, lastPage:Int = -1) {
+        self.currentPage = currentPage
+        self.total = total
+        self.perPage = perPage
+        self.lastPage = lastPage
+    }
+    
+    init(with dictionary: [String: Any]) {
+        self.currentPage = dictionary[CodingKeys.currentPage.stringValue] as! Int
+        self.total = dictionary[CodingKeys.total.stringValue] as! Int
+        self.perPage = dictionary[CodingKeys.perPage.stringValue] as! Int
+        self.lastPage = dictionary[CodingKeys.lastPage.stringValue] as! Int
+    }
     
     public var hasNext : Bool {
         get {// if total < 0 , means we have never requested the first page so we don't know how many pages are there
-            return self.total < 0 || self.currentPage < self.total
+            return self.total < 0 || self.currentPage < self.lastPage
         }
     }
     

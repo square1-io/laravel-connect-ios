@@ -27,27 +27,10 @@ import Square1CoreData
 import Square1Network
 import CoreData
 
-class HttpTask: LaravelTask {
-    
-    let task : URLSessionDataTask
-    
-    public init(sessionTask: URLSessionDataTask){
-        self.task = sessionTask
-    }
-    
-    func cancel() {
-        self.task.cancel()
-    }
-    
-    func start() {
-        self.task.resume()
-    }
-  
-}
 
 class LaravelConnectClient {
     
-    private let coredata: CoreDataManager?
+    private let coredata: CoreDataManager
     let settings: LaravelSettings
     let session: URLSession
     
@@ -68,24 +51,74 @@ class LaravelConnectClient {
         self.session = URLSession(configuration: sessionConfiguration)
     }
     
+    /**
+     Creates new instance of a LaravelRequest.
+     
+     @param method, HTTPMethod
+     
+     @return LaravelRequest.
+     */
     private func newRequest(method: HTTPMethod = HTTPMethod.GET) -> LaravelRequest? {
         
-        return LaravelRequest(method: method,
+        let request =  LaravelRequest(method: method,
                               scheme: settings.httpScheme,
                               host: settings.apiHost,
                               session: self.session)
         
+        self.addCommonHeadersToRequest(request: request)
+        
+        return request;
+        
+    }
+    
+    /**
+     Creates new instance of a LaravelRequest pointing to the root of the connect endpoints
+     as specified in the settings.
+     
+     @param method, HTTPMethod
+     
+     @return LaravelRequest.
+     */
+    private func newConnectRequest(method: HTTPMethod = HTTPMethod.GET) -> LaravelRequest? {
+        
+        let request = self.newRequest(method: method)
+        
+        request?.addPathSegments(segments: self.settings.apiRootPathSegments)
+        
+        return request
+        
+    }
+    
+    private func addCommonHeadersToRequest(request: LaravelRequest) {
+        
+        let authToken = Auth.shared.token()
+
+        if(authToken != nil) {// add Authorization Bearer
+            request.addRequestHeader(name: "Authorization", value: "Bearer " + authToken!)
+        }
+        
+        // is there an API Key we need to add ?
+        if(!self.settings.apiKeyValue.isEmpty) {
+            request.addRequestHeader(name: self.settings.apiKeyHeaderName, value: self.settings.apiKeyValue)
+        }
+        
     }
 
-    public func newModelList(model: NSManagedObject.Type, relation: String = "") -> LaravelRequest {
+    public func newModelList(model: ConnectModel.Type, relation: String = "", include:[String] = []) -> LaravelRequest {
         
-        let request = self.newRequest()
-        
-        if let modelPah = self.coredata?.pathForModel(model: model) {
+        let request = self.newConnectRequest()
+        request?.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, model:model))
+
+        if let modelPah:String = self.coredata.pathForModel(model: model) {
             request?.addPathSegment(segment: modelPah)
         }
         
-        if relation.count > 0 {
+        if  include.count > 0 {
+            let value = include.joined(separator: ",")
+            request?.addQueryParameter(name: "include", value: value)
+        }
+        
+        if !relation.isEmpty {
             request?.addPathSegment(segment: relation)
         }
         

@@ -35,20 +35,21 @@ public class LaravelConnect: NSObject {
     // MARK: - Properties
     private var httpClient: LaravelConnectClient!
     private var settings: LaravelSettings!
-    private var coreData: CoreDataManager!
+    private var dataManager: CoreDataManager!
     
     // MARK: - Methods
     public static func configure(settings : LaravelSettings, onCompletion: @escaping () -> ()){
-        instance.configure(settings: settings, onCompletion: onCompletion)
+        instance.configure(settings:settings, onCompletion:onCompletion)
     }
     
     private func configure(settings : LaravelSettings, onCompletion: @escaping () -> ()){
-        self.settings = settings
-        self.coreData = CoreDataManager(modelName: settings.coreDataModelName)
         
-        self.coreData.initCoreDataStack (completionClosure: {
+        self.settings = settings
+        self.dataManager = CoreDataManager(modelName: settings.coreDataModelName)
+        
+        self.dataManager.initCoreDataStack (completionClosure: {
             // create API client that will make all REST requests
-            self.httpClient = LaravelConnectClient(settings: settings, coredata: self.coreData)
+            self.httpClient = LaravelConnectClient(settings:settings, coredata:self.dataManager)
             onCompletion()
         })
 
@@ -57,52 +58,31 @@ public class LaravelConnect: NSObject {
     public static func shared() -> LaravelConnect {
         return instance;
     }
-    
-//    public func execute(request: LaravelRequest) -> LaravelTask {
-//        let task = self.httpClient.buildLaravelTask(request: request)
-//        task.start()
-//        return task
-//    }
-    
-    public func list(model: NSManagedObject.Type, relation: String = "", filter: Filter = Filter()) -> ModelList{
-        return ModelList(request: self.httpClient.newModelList(model: model, relation: relation), filter: filter)
+
+    public func coreData() -> CoreDataManager {
+        return self.dataManager;
     }
     
-//    private func prepareConnectRequest<T: NSManagedObject>(model: T.Type) -> LaravelRequest!
-//    {
-//        guard let modelPath = self.pathForModel(model: model) else {
-//            return nil
-//        }
-//
-//        let request = LaravelRequest.initRequest();
-//
-//        request.parseDataBlock = { (data: Data?) in
-//
-//            do {
-//                if((data) != nil){
-//                    let json = try JSONSerialization.jsonObject(with: data!)
-//                    return json
-//                }
-//            } catch {
-//                print("Error deserializing JSON: \(error)")
-//            }
-//            return nil
-//        }
-//
-//        request.setScheme(scheme: self.settings.httpScheme)
-//        request.setHost(host: self.settings.apiHost)
-//        request.addPathSegments(segments: self.settings.apiRootPathSegments)
-//        request.addPathSegment(segment: modelPath)
-//
-//        return request;
-//    }
+    public func list(model: ConnectModel.Type, relation: String = "", filter: Filter = Filter(), include:[String] = []) -> ModelList{
+        return ModelList(entity:NSStringFromClass(model), request:self.httpClient.newModelList(model:model, relation:relation, include:include), filter:filter)
+    }
     
     private func pathForModel<T: NSManagedObject>(model: T.Type) -> String? {
         
-        let entity = self.coreData.entityDescriptionForClass(model: model, context: self.coreData.viewContext)
+        let entity = self.dataManager.entityDescriptionForClass(model:model, context:self.dataManager.viewContext)
         return entity?.modelPath
     }
     
+    
+    public static func storyBoard() -> UIStoryboard {
+        
+        let podBundle = Bundle(for: LaravelConnect.self)
+        let bundleURL:URL = podBundle.url(forResource: "LaravelConnect", withExtension: "bundle")!
+        let bundle = Bundle(url: bundleURL)
+        
+        return UIStoryboard(name: "modelBrowser", bundle: bundle)
+        
+    }
     
     
 }

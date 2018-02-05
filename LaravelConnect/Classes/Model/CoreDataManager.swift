@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-class CoreDataManager : NSObject {
+public class CoreDataManager : NSObject {
     
     private var storeName: String?
     
@@ -51,7 +51,10 @@ class CoreDataManager : NSObject {
             do {
                 try self.persistentStoreCoordinator?.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL, options: nil)
                 //The callback block is expected to complete the User Interface and therefore should be presented back on the main queue so that the user interface does not need to be concerned with which queue this call is coming from.
-                DispatchQueue.main.sync(execute: completionClosure)
+                DispatchQueue.main.sync(execute: {
+                     
+                     completionClosure()
+                })
             } catch {
                 fatalError("Error migrating store: \(error)")
             }
@@ -67,11 +70,19 @@ class CoreDataManager : NSObject {
         context.undoManager = nil
         context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
         context.persistentStoreCoordinator = self.persistentStoreCoordinator
-        
-        //NotificationCenter.default.addObserver(self, selector: #selector(DataStack.mainContextDidSave(_:)), name: .NSManagedObjectContextDidSave, object: context)
-        
         return context
     }()
+    
+    @objc public func newBackgroundContext() -> NSManagedObjectContext {
+        let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        context.persistentStoreCoordinator = self.persistentStoreCoordinator
+        context.undoManager = nil
+        context.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy
+        
+        //NotificationCenter.default.addObserver(self, selector: #selector(DataStack.backgroundContextDidSave(_:)), name: .NSManagedObjectContextDidSave, object: context)
+        
+        return context
+    }
 
     public func entityDescriptionForClass(model: NSManagedObject.Type, context: NSManagedObjectContext) -> NSEntityDescription? {
         return self.entityDescription(entityName: NSStringFromClass(model) , context: context)

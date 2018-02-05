@@ -26,10 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 .contains(param: "medias.event_id", value: "3")
                 .or()
                 .equal(param: "id", value: "33")
-            
-            let list = City.list(filter: filter)
-            
-            
+   
+
         });
     
       
