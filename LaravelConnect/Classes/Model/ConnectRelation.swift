@@ -10,21 +10,31 @@ import CoreData
 
 open class ConnectRelation : NSObject {
     
+    //the key that identify this relation in the received json
     public var jsonKey:String {
         get {
             return relationDescription.jsonKey
         }
     }
     
-    public var jsonForeignKey:String {
-        get {
-            return relationDescription.jsonForeignKey
-        }
-    }
-    
+    //the name of the property in the CoreData model for this relation
     public var name:String {
         get {
             return relationDescription.name
+        }
+    }
+    
+    public var parentModel:ConnectModel.Type {
+        
+        get {
+            return type(of: self.parent)
+        }
+    }
+    
+    public var relatedModel:ConnectModel.Type {
+        
+        get {
+            return NSClassFromString((self.relationDescription.destinationEntity?.managedObjectClassName)!) as! ConnectModel.Type
         }
     }
     
@@ -37,17 +47,34 @@ open class ConnectRelation : NSObject {
         self.relationDescription = description
     }
 }
-
-open class ConnectOneRelation<T: ConnectModel> : ConnectRelation {
+protocol ConnectOneRelationProtocol {
+    
+    var relatedId: Any? {get}
+    var relatedModel:ConnectModel.Type {get}
+    
+}
+open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRelationProtocol {
     
     //the Managed Object for this relation if one is set
     var related: T?
+    
+    // the json foreign key in case the model is not set
+    public var jsonForeignKey:String {
+        get {
+            return relationDescription.jsonForeignKey
+        }
+    }
+    
     //we might not have the object but just the foreign key
-    private var relatedId: Int64
+    public var relatedId: Any? {
+        
+        get {
+            return getRelatedId()
+        }
+    }
     
     public required init(parent:ConnectModel,
                 description:NSRelationshipDescription){
-        self.relatedId = 0
         super.init(parent:parent, description: description)
         
     }
@@ -55,30 +82,45 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation {
     public func object() -> T! {
         return self.parent.value(forKey: self.name) as! T
     }
+    
+    private func getRelatedId() -> Any? {
+        
+        //is the full related object available?
+        if self.related != nil,
+            self.related?.primaryKey != nil {
+            return self.related?.primaryKey
+        }
+        //try the foreign key if set on the parent object
+        if let p = self.parent.properyByJsonKey(jsonKey: self.jsonForeignKey) {
+            return self.parent.value(forKey: p.name)
+        }
+        
+        return nil
+    }
 
     /*
      
      */
     public func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) throws {
         
-        //if there is no json for the object try extracting at least the id of the related one
-        guard let data = parentJson[self.jsonKey] as? [String: AnyObject],
-        let entity = self.relationDescription.destinationEntity else {
-            
-            guard let relatedId = parentJson[self.jsonForeignKey] as? Int64 else {
-                self.relatedId = self.related?.value(forKey: self.jsonForeignKey) as! Int64
-                return
-            }
-            
-            self.relatedId = relatedId
-            
-            return;
-        }
-        
-        self.related = try decoder.decode(item:data,
-                                      entity:entity,
-                                      id:&self.relatedId) as? T
-        
+//        //if there is no json for the object try extracting at least the id of the related one
+//        guard let data = parentJson[self.jsonKey] as? [String: AnyObject],
+//        let entity = self.relationDescription.destinationEntity else {
+//            
+//            guard let relatedId = parentJson[self.jsonForeignKey] as? Int64 else {
+//                self.relatedId = self.related?.value(forKey: self.jsonForeignKey) as! Int64
+//                return
+//            }
+//            
+//            self.relatedId = relatedId
+//            
+//            return;
+//        }
+//        
+//        self.related = try decoder.decode(item:data,
+//                                      entity:entity,
+//                                      id:&self.relatedId) as? T
+//        
     }
     
 }
@@ -93,6 +135,10 @@ public class ConnectManyRelation<T: ConnectModel> : ConnectRelation {
         self.related = Set()
         super.init(parent:parent, description: description)
         
+    }
+    
+    public func list(filter: Filter = Filter(), include:[String] = []) -> ModelList {
+        return LaravelConnect.shared().list(model:self.parentModel, relation:self, filter:filter, include:include)
     }
     
     /*

@@ -27,7 +27,10 @@ import Square1CoreData
 
 let CONST_LARAVEL_JSON_KEY = "laravel.json.key"
 let CONST_LARAVEL_JSON_FOREIGN_KEY = "laravel.model.foreignKey"
-let CONST_LARAVEL_JSON_PRIMARY_KEY = "laravel.json.primary.key"
+
+//the name of the CoreData property that acts ad the primary key for this entity
+let CONST_LARAVEL_COREDATA_PRIMARY_KEY = "laravel.cd.primary.key"
+
 let CONST_LARAVEL_MODEL_PATH_KEY = "laravel.model.path"
 
 
@@ -35,7 +38,25 @@ extension NSEntityDescription {
     
     var modelPath : String {return  self.userInfo?[CONST_LARAVEL_MODEL_PATH_KEY] as! String}
     
-    var jsonPrimaryKey: String { return String(describing:self.userInfo?[CONST_LARAVEL_JSON_PRIMARY_KEY]) }
+    var primaryKeyName: String { return self.userInfo?[CONST_LARAVEL_COREDATA_PRIMARY_KEY] as! String }
+    
+    public var oneRelations:[String : NSRelationshipDescription] {
+        
+        get {
+            return  self.relationshipsByName.filter({ item in
+                 item.value.isToMany == false
+            })
+        }
+    }
+    
+    public var manyRelations:[String : NSRelationshipDescription] {
+        
+        get {
+            return  self.relationshipsByName.filter({ item in
+                item.value.isToMany == true
+            })
+        }
+    }
 }
 
 extension NSPropertyDescription {
@@ -55,11 +76,13 @@ open class ConnectModel: NSManagedObject, Managed {
     
     open override func awakeFromInsert() {
         super.awakeFromInsert()
+        mapProperties()
         setupRelations()
     }
     
     open override func awakeFromFetch() {
         super.awakeFromFetch()
+        mapProperties()
         setupRelations()
     }
     
@@ -67,6 +90,36 @@ open class ConnectModel: NSManagedObject, Managed {
         
     }
     
+    private func mapProperties(){
+        
+        var map = Dictionary<String, NSPropertyDescription>()
+        
+        for p in self.entity.properties {
+            map[p.jsonKey] = p
+        }
+        
+        self.jsonKeyToProperty = map
+    }
+    
+    private var jsonKeyToProperty:Dictionary<String, NSPropertyDescription>?
+    
+    public func properyByJsonKey(jsonKey:String) -> NSPropertyDescription? {
+        
+        if let p = self.jsonKeyToProperty {
+            return p[jsonKey]
+        }
+        return nil
+    }
+ 
+    public var modelPath:String {
+        get {
+            return self.entity.modelPath
+        }
+    }
+    
+    /*
+     All properties that are not relations
+    */
     public var attributes:[String : NSAttributeDescription] {
 
         get {
@@ -74,20 +127,53 @@ open class ConnectModel: NSManagedObject, Managed {
         }
     }
     
-    public var oneRelations:[String : NSRelationshipDescription] {
+    /*
+      The value of the primary key for this instance
+     */
+    public var primaryKey: Any? {
         
         get {
-            return  self.entity.relationshipsByName
+            //get the name of the property first
+            let propertyName = self.entity.primaryKeyName
+            if  self.attributes[propertyName] != nil {
+                return self.value(forKey: propertyName)
+            }
+            return nil
+        }
+        
+    }
+    
+    public var oneRelations:[String : NSRelationshipDescription] {
+    
+        get {
+            return  self.entity.oneRelations
         }
     }
     
+    public var manyRelations:[String : NSRelationshipDescription] {
+        
+        get {
+            return  self.entity.manyRelations
+        }
+    }
+    
+    public private(set) var connectRelations:Dictionary<String, ConnectRelation>?
+    
     public func setupRelation<T:ConnectRelation>(name:String) -> T {
+        
+        if(self.connectRelations == nil){
+            self.connectRelations = Dictionary()
+        }
+        
         let relations:[String : NSRelationshipDescription] = self.entity.relationshipsByName
-        return T(parent: self, description:relations[name]!)
+        let relation = T(parent: self, description:relations[name]!)
+        self.connectRelations![name] = relation
+        return relation
+        
     }
     
     public static func list(filter: Filter = Filter(), include:[String] = []) -> ModelList {
-        return LaravelConnect.shared().list(model:self, relation:"", filter:filter, include:include)
+        return LaravelConnect.shared().list(model:self, relation:nil, filter:filter, include:include)
     }
 }
 

@@ -104,7 +104,7 @@ class LaravelConnectClient {
         
     }
 
-    public func newModelList(model: ConnectModel.Type, relation: String = "", include:[String] = []) -> LaravelRequest {
+    public func newModelList<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, include: [String] = []) -> LaravelRequest {
         
         let request = self.newConnectRequest()
         request?.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, model:model))
@@ -113,14 +113,19 @@ class LaravelConnectClient {
             request?.addPathSegment(segment: modelPah)
         }
         
+        // add path to relations like for example users/2/cars
+        if let relation = relation,
+            let parentId:Any = relation.parent.primaryKey {
+            request?.addPathSegment(segment: String(describing: parentId))
+            request?.addPathSegment(segment: relation.name)
+        }
+        
         if  include.count > 0 {
             let value = include.joined(separator: ",")
             request?.addQueryParameter(name: "include", value: value)
         }
         
-        if !relation.isEmpty {
-            request?.addPathSegment(segment: relation)
-        }
+    
         
         return request!
     }

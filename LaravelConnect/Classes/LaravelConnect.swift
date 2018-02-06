@@ -63,8 +63,10 @@ public class LaravelConnect: NSObject {
         return self.dataManager;
     }
     
-    public func list(model: ConnectModel.Type, relation: String = "", filter: Filter = Filter(), include:[String] = []) -> ModelList{
-        return ModelList(entity:NSStringFromClass(model), request:self.httpClient.newModelList(model:model, relation:relation, include:include), filter:filter)
+    public func list<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, filter: Filter = Filter(), include:[String] = []) -> ModelList{
+        return ModelList(entity:NSStringFromClass(model),
+                         request:self.httpClient.newModelList(model:model, relation:relation, include:include),
+                         filter:filter)
     }
     
     private func pathForModel<T: NSManagedObject>(model: T.Type) -> String? {
