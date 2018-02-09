@@ -10,7 +10,7 @@ import Foundation
 import LaravelConnect
 
 public class SampleAppConnectSettings: LaravelSettings {
-    
+
     public let apiHost: String = "connect-demo.mobile1.io"
     public let cacheDisabled: Bool = true
     public let coreDataModelName = "laravel_connect"
@@ -19,5 +19,7 @@ public class SampleAppConnectSettings: LaravelSettings {
 
     public let apiKeyHeaderName = "x-connect-api-key"
     public let apiKeyValue = ""
+    
+    public let apiIncludeOneRelations: Bool = true
  
 }

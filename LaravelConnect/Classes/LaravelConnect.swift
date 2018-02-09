@@ -62,8 +62,23 @@ public class LaravelConnect: NSObject {
     public func coreData() -> CoreDataManager {
         return self.dataManager;
     }
+
+    public func get(model: ConnectModel.Type, modelId: ModelId,
+                        include:[String] = [],
+                        done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
+        
+        let request:LaravelRequest = self.httpClient.newModelShow(model: model, modelId: modelId, include: include)
+        
+        request.start(success: { (response) in
+            let r:LaravelSingleObjectModelResponse = response as! LaravelSingleObjectModelResponse
+            done(r.managedId,nil)
+        }) { (error) in
+            done(nil,error)
+        }
+        return request
+    }
     
-    public func list<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, filter: Filter = Filter(), include:[String] = []) -> ModelList{
+    public func list<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, filter: Filter = Filter(), include:[String] = []) -> ModelList {
         return ModelList(entity:NSStringFromClass(model),
                          request:self.httpClient.newModelList(model:model, relation:relation, include:include),
                          filter:filter)

@@ -34,6 +34,10 @@ public protocol LaravelSettings {
     //array of the root path elements for the API ["api","v1"] => /api/v1/
     var apiRootPathSegments: [String] { get }
     
+    //returns true to include by default the to-one relations when fetchin models
+    // if set to false will have to manually requests them
+    var apiIncludeOneRelations:Bool {get}
+    
     var cacheDisabled : Bool { get }
     
     //name of the coreData model file
@@ -56,5 +60,7 @@ public extension LaravelSettings {
     var apiKeyValue: String { return "" }
     
     var laravelDateFormat: String { return  "yyyy-MM-dd HH:mm:ss"}
+    
+    var apiIncludeOneRelations: Bool {return true}
 }
 

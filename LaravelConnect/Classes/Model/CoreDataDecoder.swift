@@ -42,13 +42,15 @@ public class CoreDataDecoder  {
     private let context: NSManagedObjectContext
     private let model: ConnectModel.Type
     private let entity: NSEntityDescription
-    public var ids: Array<Int64>
+    public var ids: Array<ModelId>
+    public var managedIds: Array<NSManagedObjectID>
     
     //if no entity throws
     public init(context:NSManagedObjectContext, model:ConnectModel.Type) throws {
         self.context = context
         self.model = model
         self.ids = Array<Int64>()
+        self.managedIds = Array<NSManagedObjectID>()
         self.entity = NSEntityDescription.entity(forEntityName:NSStringFromClass(model), in:self.context)!
     }
     
@@ -69,33 +71,38 @@ public class CoreDataDecoder  {
         
         for item in items {
             do{
-                var id:Int64 = 0
-                try self.decode(item: item, model: self.model, id:&id)
+                var id:ModelId = 0
+                let obj = try self.decode(item: item, model: self.model, id:&id)
                 self.ids.append(id)
+                self.managedIds.append(obj.objectID)
             }catch {}
         }
     }
     
-    public func decode(item:[String : AnyObject], model:ConnectModel.Type, id:inout Int64) throws -> ConnectModel {
+    public func decode(item:[String : AnyObject], model:ConnectModel.Type, id:inout ModelId) throws -> ConnectModel {
         
         let entity:NSEntityDescription = try self.entityDescription(model:model)
         return try self.decode(item: item, entity: entity, id: &id)
         
     }
     
-    public func decode(item:[String : AnyObject], entity:NSEntityDescription, id:inout Int64) throws -> ConnectModel {
+    public func decode(item:[String : AnyObject], entity:NSEntityDescription, id:inout ModelId) throws -> ConnectModel {
 
-        id = item["id"] as! Int64
+        id = item["id"] as! ModelId
  #if DEBUG
     print("START decoding ---> \(String(describing: entity.name!)) \(String(describing: entity.managedObjectClassName!)) id = \(id)")
 #endif
-        let predicate = NSPredicate(format: "id == %i", id)
+        let predicate = NSPredicate(format: "id == %@", String(describing:id))
         let currentModel = NSClassFromString(entity.managedObjectClassName) as! ConnectModel.Type
         let object = currentModel.findOrCreate(in: self.context, matching: predicate, configure: {_ in () })
         
         let attributes = entity.attributesByName
         
+        // build a map between the jsonKey and the name of the corresponding member
+        var mapJsonKeyToAttributeName = Dictionary<String,String>()
+        
         for (name, attribute) in attributes {
+            mapJsonKeyToAttributeName[name] = attribute.name
             guard let value = self.parseValue(value: item[attribute.jsonKey], attribute: attribute) else {
                 continue
             }
@@ -103,6 +110,12 @@ public class CoreDataDecoder  {
     print("setting ---> \(name) = \(value)")
 #endif
             object.setValue(value, forKey:name)
+        }
+        
+        if let oneRelations = object.connectRelations {
+            for (_,oneRelation) in oneRelations {
+                try oneRelation.decode(decoder: self, parentJson: item)
+            }
         }
         
         let relations = entity.relationshipsByName
@@ -117,7 +130,7 @@ public class CoreDataDecoder  {
 #endif
                 // here we have a relations
                 guard let relationData:[String : AnyObject] = item[name] as? [String : AnyObject] else { continue}
-                var currentId:Int64 = 0
+                var currentId:ModelId = 0
                 let relationObject = try self.decode(item: relationData, entity: relation.destinationEntity!, id:&currentId)
                 object.setValue(relationObject, forKey:name)
             }

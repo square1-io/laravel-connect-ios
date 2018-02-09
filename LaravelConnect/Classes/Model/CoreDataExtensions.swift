@@ -33,6 +33,7 @@ let CONST_LARAVEL_COREDATA_PRIMARY_KEY = "laravel.cd.primary.key"
 
 let CONST_LARAVEL_MODEL_PATH_KEY = "laravel.model.path"
 
+public typealias ModelId = Int64
 
 extension NSEntityDescription {
     
@@ -71,6 +72,8 @@ extension NSRelationshipDescription {
     
     var jsonForeignKey: String { return self.userInfo?[CONST_LARAVEL_JSON_FOREIGN_KEY] as! String }
 }
+
+
 
 open class ConnectModel: NSManagedObject, Managed {
     
@@ -130,15 +133,16 @@ open class ConnectModel: NSManagedObject, Managed {
     /*
       The value of the primary key for this instance
      */
-    public var primaryKey: Any? {
+    public var primaryKey: ModelId {
         
         get {
             //get the name of the property first
             let propertyName = self.entity.primaryKeyName
-            if  self.attributes[propertyName] != nil {
-                return self.value(forKey: propertyName)
+            if  self.attributes[propertyName] != nil,
+                let modelId = self.value(forKey: propertyName) as? ModelId  {
+                return modelId
             }
-            return nil
+            return 0
         }
         
     }
@@ -159,6 +163,12 @@ open class ConnectModel: NSManagedObject, Managed {
     
     public private(set) var connectRelations:Dictionary<String, ConnectRelation>?
     
+    static func findWithId(in context: NSManagedObjectContext, id:ModelId) -> Self? {
+        let predicate = NSPredicate(format: self.entity().primaryKeyName + " == %i",id)
+        return self.findOrFetch(in: context, matching: predicate )
+    }
+
+    
     public func setupRelation<T:ConnectRelation>(name:String) -> T {
         
         if(self.connectRelations == nil){
@@ -170,6 +180,14 @@ open class ConnectModel: NSManagedObject, Managed {
         self.connectRelations![name] = relation
         return relation
         
+    }
+    
+    public func refresh(include:[String] = [], done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
+        return LaravelConnect.shared().get(model:type(of: self), modelId: self.primaryKey, include:include, done: done)
+    }
+
+    public static func get(modelId: ModelId, include:[String] = [], done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
+        return LaravelConnect.shared().get(model:self, modelId: modelId, include:include, done: done)
     }
     
     public static func list(filter: Filter = Filter(), include:[String] = []) -> ModelList {

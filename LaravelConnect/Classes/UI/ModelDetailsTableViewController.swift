@@ -14,6 +14,9 @@ private let MANY_LABEL = "Many Relations"
 class ModelDetailsTableViewController: UITableViewController {
     
     public var model:ConnectModel?
+    public var modelId:Any?
+    public var modelType:ConnectModel.Type?
+    
     
     public var sections:Array<[String]>?
     public var sectionsNames:Array<String>?
@@ -126,16 +129,26 @@ class ModelDetailsTableViewController: UITableViewController {
         }
     }
     
-    private func setOneRelationCell(cell:OneRelationCell, indexPath:IndexPath){
+    private func oneRelationForIndexPath(indexPath:IndexPath?) -> ConnectOneRelationProtocol?{
         
         if let sec = self.sections,
-            let secIndex:Int = indexPath.section,
+            let secIndex:Int = indexPath?.section,
             let attributes:[String] = sec[secIndex],
-            let name:String = attributes[indexPath.row],
+            let secRow:Int = indexPath?.row,
+            let name:String = attributes[secRow],
             let r = self.model?.connectRelations![name],
-            let relation:ConnectOneRelationProtocol = r as? ConnectOneRelationProtocol,
+            let relation:ConnectOneRelationProtocol = r as? ConnectOneRelationProtocol {
+                return relation
+            }
+        
+        return nil
+    }
+    
+    private func setOneRelationCell(cell:OneRelationCell, indexPath:IndexPath){
+        
+        if let relation:ConnectOneRelationProtocol = self.oneRelationForIndexPath(indexPath: indexPath),
             let value = relation.relatedId {
-            cell.labelName.text = name.capitalized
+            cell.labelName.text = relation.name.capitalized
             cell.labelType.text = String(describing: relation.relatedModel)
             cell.labelValue.text = String( describing: value )
 
@@ -193,14 +206,23 @@ class ModelDetailsTableViewController: UITableViewController {
     }
     */
 
-    /*
+    
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+
+        let indexPath = self.tableView.indexPathForSelectedRow
+        let segueIdentifier:String = segue.identifier != nil ? segue.identifier! : ""
+        
+        if ("OneRelationSegue".elementsEqual(segueIdentifier)) {
+            
+            if let controller:ModelDetailsTableViewController? = segue.destination as? ModelDetailsTableViewController,
+                let model = self.oneRelationForIndexPath(indexPath: indexPath) {
+                controller?.model = model.object()
+            }
+        }
+      
     }
-    */
+    
 
 }

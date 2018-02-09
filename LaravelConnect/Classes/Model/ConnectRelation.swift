@@ -46,17 +46,32 @@ open class ConnectRelation : NSObject {
         self.parent = parent
         self.relationDescription = description
     }
+    
+    public func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) throws {}
 }
 protocol ConnectOneRelationProtocol {
     
-    var relatedId: Any? {get}
+
+    
+    var relatedId: ModelId? {get}
     var relatedModel:ConnectModel.Type {get}
+    var name:String {get}
+    
+    func object() -> ConnectModel?
     
 }
 open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRelationProtocol {
     
+    typealias K  = T
     //the Managed Object for this relation if one is set
-    var related: T?
+    var related: T? {
+        set {
+            self.parent.setValue(newValue, forKey: self.name)
+        }
+        get {
+            return  self.parent.value(forKey: self.name) as? T
+        }
+    }
     
     // the json foreign key in case the model is not set
     public var jsonForeignKey:String {
@@ -65,8 +80,11 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
         }
     }
     
+    // the name of the property in the parent model that stores the  foreign key
+     var coreDataForeignKey:String?
+    
     //we might not have the object but just the foreign key
-    public var relatedId: Any? {
+    public var relatedId: ModelId? {
         
         get {
             return getRelatedId()
@@ -77,13 +95,38 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
                 description:NSRelationshipDescription){
         super.init(parent:parent, description: description)
         
+        //this should be changed
+        let attributes = parent.attributes
+        
+        // build a map between the jsonKey and the name of the corresponding member
+ 
+        for (name, attribute) in attributes {
+            if(self.jsonForeignKey.elementsEqual(attribute.jsonKey)) {
+                self.coreDataForeignKey = name
+                break
+            }
+        }
     }
     
-    public func object() -> T! {
-        return self.parent.value(forKey: self.name) as! T
+    
+    public func object() -> ConnectModel? {
+        
+        //if it is set then return it
+        if self.related != nil {
+            return self.related
+        }
+        // lets see if instead it is available in CoreData already
+        if let modelId = self.getRelatedId() {
+            self.related =  T.findWithId(in:self.parent.managedObjectContext!, id:modelId )
+            do {
+                try self.parent.managedObjectContext?.save()
+            } catch {}
+        }
+        
+        return self.related
     }
     
-    private func getRelatedId() -> Any? {
+    private func getRelatedId() -> ModelId? {
         
         //is the full related object available?
         if self.related != nil,
@@ -92,7 +135,7 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
         }
         //try the foreign key if set on the parent object
         if let p = self.parent.properyByJsonKey(jsonKey: self.jsonForeignKey) {
-            return self.parent.value(forKey: p.name)
+            return self.parent.value(forKey: p.name) as? ModelId
         }
         
         return nil
@@ -101,26 +144,24 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
     /*
      
      */
-    public func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) throws {
+    public override func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) throws {
         
-//        //if there is no json for the object try extracting at least the id of the related one
-//        guard let data = parentJson[self.jsonKey] as? [String: AnyObject],
-//        let entity = self.relationDescription.destinationEntity else {
-//            
-//            guard let relatedId = parentJson[self.jsonForeignKey] as? Int64 else {
-//                self.relatedId = self.related?.value(forKey: self.jsonForeignKey) as! Int64
-//                return
-//            }
-//            
-//            self.relatedId = relatedId
-//            
-//            return;
-//        }
-//        
-//        self.related = try decoder.decode(item:data,
-//                                      entity:entity,
-//                                      id:&self.relatedId) as? T
-//        
+        
+        ///set the relation foign key value
+        if let relatedId = parentJson[self.jsonForeignKey],
+            let cdProperty = self.coreDataForeignKey,
+            cdProperty.isEmpty == false {
+            self.parent.setValue(relatedId, forKey: cdProperty)
+        }
+        
+        // parse the relation json if it was included
+        if let data = parentJson[self.jsonKey] as? [String: AnyObject],
+            let entity = self.relationDescription.destinationEntity{
+            var newId:ModelId = 0
+            let relatedObject = try decoder.decode(item: data, entity: entity, id: &newId)
+            self.related = relatedObject as! T
+        }
+
     }
     
 }

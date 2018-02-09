@@ -49,11 +49,10 @@ public struct ModelListIterator: IteratorProtocol {
 
 public class ModelList : NSObject, Sequence {
     
-
     private let request: LaravelRequest
     private let filter: Filter
-    private var ids:[Int64]
-    private var items:Dictionary<Int64, ConnectModel>
+    private var ids:[ModelId]
+    private var items:Dictionary<ModelId, ConnectModel>
     private let entity:String
     
     public var count: Int {
@@ -74,13 +73,13 @@ public class ModelList : NSObject, Sequence {
         super.init()
     }
     
-    public func refresh(done:@escaping ([Int64]?, Error?) -> Void) {
+    public func refresh(done:@escaping ([ModelId]?, Error?) -> Void) {
         self.ids.removeAll()
         self.currentPage = Pagination.NOPAGE
         self.nextPage(done: done)
     }
     
-    @discardableResult public func nextPage(done:@escaping ([Int64]?, Error?) -> Void) -> Bool {
+    @discardableResult public func nextPage(done:@escaping ([ModelId]?, Error?) -> Void) -> Bool {
         
         if(self.currentPage.hasNext && request.state != .Running){
             
@@ -116,7 +115,7 @@ public class ModelList : NSObject, Sequence {
     subscript(index: Int) -> ConnectModel? {
         
         guard index < self.ids.count else { return nil}
-        let currentId:Int64 = self.ids[index]
+        let currentId:ModelId = self.ids[index]
         return self.items[currentId]
     }
     

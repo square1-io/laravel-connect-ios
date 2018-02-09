@@ -80,7 +80,7 @@ class ModelListTableViewController: UITableViewController {
     }
     
     private func loadNextPage(){
-        self.list?.nextPage(done:{(newIds:[Int64]?, error:Error?) in
+        self.list?.nextPage(done:{(newIds:[ModelId]?, error:Error?) in
             self.updateSubTitle()
             self.tableView.reloadData()
         });

@@ -157,6 +157,7 @@
                                     <outlet property="labelName" destination="sxP-0D-Lwu" id="rro-zi-9xc"/>
                                     <outlet property="labelType" destination="0rF-Za-Da1" id="24w-jD-I1D"/>
                                     <outlet property="labelValue" destination="bCG-Ha-p93" id="IBL-Ff-3Rk"/>
+                                    <segue destination="3VE-MS-d5c" kind="show" identifier="OneRelationSegue" id="Cm9-0G-bnA"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ManyRelationCell" rowHeight="90" id="5kg-c4-LC8" customClass="ManyRelationCell" customModule="LaravelConnect" customModuleProvider="target">
@@ -219,7 +220,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Etc-kc-DzI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1424.8" y="-206.44677661169416"/>
+            <point key="canvasLocation" x="1586" y="-318"/>
         </scene>
         <!--Model Navigation Controller-->
         <scene sceneID="vHh-3q-1wN">

@@ -104,30 +104,85 @@ class LaravelConnectClient {
         
     }
 
+    public func newModelShow(model: ConnectModel.Type, modelId: ModelId, include: [String] = []) -> LaravelRequest {
+        
+        let request = self.newConnectRequest()!
+        
+        request.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, showModel:model))
+        
+        if let modelPah:String = self.coredata.pathForModel(model: model) {
+            request.addPathSegment(segment: modelPah)
+        }
+
+        request.addPathSegment(segment: String(describing: modelId))
+        
+        
+        setupModelIncludes(model: model, request: request, include: include)
+        
+        return request
+    }
+    
     public func newModelList<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, include: [String] = []) -> LaravelRequest {
         
-        let request = self.newConnectRequest()
-        request?.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, model:model))
+        
+        let request = self.newConnectRequest()!
+        
+        request.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, model:model))
 
         if let modelPah:String = self.coredata.pathForModel(model: model) {
-            request?.addPathSegment(segment: modelPah)
+            request.addPathSegment(segment: modelPah)
         }
         
         // add path to relations like for example users/2/cars
         if let relation = relation,
             let parentId:Any = relation.parent.primaryKey {
-            request?.addPathSegment(segment: String(describing: parentId))
-            request?.addPathSegment(segment: relation.name)
+            request.addPathSegment(segment: String(describing: parentId))
+            request.addPathSegment(segment: relation.name)
         }
         
-        if  include.count > 0 {
-            let value = include.joined(separator: ",")
-            request?.addQueryParameter(name: "include", value: value)
-        }
+//        var includes = Array(include)
+//
+//        if self.settings.apiIncludeOneRelations == true,
+//            model.entity().oneRelations.count > 0{
+//            //loop over the one relations and include
+//            var oneRelations = Set(model.entity().oneRelations.keys)
+//            for s in include {
+//                oneRelations.insert(s)
+//            }
+//
+//            includes = Array(oneRelations)
+//        }
+//
+//        if  includes.count > 0 {
+//            let value = includes.joined(separator: ",")
+//            request?.addQueryParameter(name: "include", value: value)
+//        }
         
+        setupModelIncludes(model: model, request: request, include: include)
+        
+        return request
+    }
     
+    private func setupModelIncludes(model: ConnectModel.Type, request: LaravelRequest, include:Array<String>){
+    
+        var includes = Array(include)
         
-        return request!
+        if self.settings.apiIncludeOneRelations == true,
+            model.entity().oneRelations.count > 0{
+            //loop over the one relations and include
+            var oneRelations = Set(model.entity().oneRelations.keys)
+            for s in include {
+                oneRelations.insert(s)
+            }
+            
+            includes = Array(oneRelations)
+        }
+        
+        if  includes.count > 0 {
+            let value = includes.joined(separator: ",")
+            request.addQueryParameter(name: "include", value: value)
+        }
+        
     }
     
 }

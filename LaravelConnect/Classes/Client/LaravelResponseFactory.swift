@@ -69,5 +69,11 @@ public class LaravelCoreDataMoldelListResponseFactory : LaravelDefaultResponseFa
         super.init(responseType: LaravelPaginatedModelResponse.self)
     }
     
+    init(coreData: CoreDataManager, showModel: ConnectModel.Type){
+        self.coreData = coreData
+        self.model = showModel
+        super.init(responseType: LaravelSingleObjectModelResponse.self)
+    }
+
 }
 
