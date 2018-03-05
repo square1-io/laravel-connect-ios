@@ -20,7 +20,7 @@ public class LaravelPaginatedModelResponse: LaravelPaginatedResponse {
     
     private var items: Array<[String : AnyObject]>?
     
-    public required init(with dictionary: [String : Any]) {
+    public required init(with dictionary: [String : AnyObject]) {
        super.init(with: dictionary)
 
        self.items = self.data["items"] as! Array<[String : AnyObject]>
@@ -28,7 +28,7 @@ public class LaravelPaginatedModelResponse: LaravelPaginatedResponse {
     }
     
     
-    func storeModelObjects(coreData: CoreDataManager, model: ConnectModel.Type) throws {
+    public override func storeModelObjects(coreData: CoreDataManager, model: ConnectModel.Type) throws {
         let context = coreData.newBackgroundContext()
         let decoder = try CoreDataDecoder(context:context, model:model)
         decoder.decode(items: self.items!)
@@ -39,22 +39,18 @@ public class LaravelPaginatedModelResponse: LaravelPaginatedResponse {
     }
 }
 
-public class LaravelSingleObjectModelResponse: LaravelPaginatedModelResponse {
+public class LaravelSingleObjectModelResponse: LaravelResponse {
     
-    public var id:Any? {
+    public var id:ModelId? = 0
+    public var managedId:NSManagedObjectID?
+    
+    public override func storeModelObjects(coreData: CoreDataManager, model: ConnectModel.Type) throws {
+        let context = coreData.newBackgroundContext()
+        let decoder = try CoreDataDecoder(context:context, model:model)
+        let decodedModel = try decoder.decode(item: self.data, model: model, id: &self.id!)
+        try context.save()
+        self.managedId = decodedModel.objectID
         
-        get {
-            guard self.ids.count > 0 else {return nil}
-            return self.ids.first
-        }
     }
-    
-    public var managedId:NSManagedObjectID? {
-        get {
-            guard self.managedIds.count > 0 else {return nil}
-            return self.managedIds.first
-        }
-    }
-    
     
 }

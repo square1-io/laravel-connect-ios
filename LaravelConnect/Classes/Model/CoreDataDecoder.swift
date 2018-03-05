@@ -51,11 +51,11 @@ public class CoreDataDecoder  {
         self.model = model
         self.ids = Array<Int64>()
         self.managedIds = Array<NSManagedObjectID>()
-        self.entity = NSEntityDescription.entity(forEntityName:NSStringFromClass(model), in:self.context)!
+        self.entity = model.entity()
     }
     
     private func entityDescription(model: NSManagedObject.Type) throws -> NSEntityDescription {
-        return try self.entityDescription(className:NSStringFromClass(model))
+        return model.entity()
     }
     
     private func entityDescription(className: String) throws -> NSEntityDescription {
@@ -86,23 +86,28 @@ public class CoreDataDecoder  {
         
     }
     
+    public func findOrCreate(entity:NSEntityDescription, id:ModelId) throws -> ConnectModel {
+        
+        let predicate = NSPredicate(format: entity.primaryKeyName + " == %i",id)
+        let currentModel = NSClassFromString(entity.managedObjectClassName) as! ConnectModel.Type
+        let object = currentModel.findOrCreate(in: self.context, matching: predicate, configure: {_ in () })
+        object.primaryKeyValue = id
+        return object
+    }
     public func decode(item:[String : AnyObject], entity:NSEntityDescription, id:inout ModelId) throws -> ConnectModel {
 
-        id = item["id"] as! ModelId
- #if DEBUG
+        id = item[entity.primaryKeyJsonKey] as! ModelId
+        
+#if DEBUG
     print("START decoding ---> \(String(describing: entity.name!)) \(String(describing: entity.managedObjectClassName!)) id = \(id)")
 #endif
-        let predicate = NSPredicate(format: "id == %@", String(describing:id))
+        let predicate = NSPredicate(format: entity.primaryKeyName + " == %i",id)
         let currentModel = NSClassFromString(entity.managedObjectClassName) as! ConnectModel.Type
         let object = currentModel.findOrCreate(in: self.context, matching: predicate, configure: {_ in () })
         
         let attributes = entity.attributesByName
         
-        // build a map between the jsonKey and the name of the corresponding member
-        var mapJsonKeyToAttributeName = Dictionary<String,String>()
-        
         for (name, attribute) in attributes {
-            mapJsonKeyToAttributeName[name] = attribute.name
             guard let value = self.parseValue(value: item[attribute.jsonKey], attribute: attribute) else {
                 continue
             }
@@ -112,34 +117,20 @@ public class CoreDataDecoder  {
             object.setValue(value, forKey:name)
         }
         
+        object.setValue(true, forKey: "hasData")
+        
         if let oneRelations = object.connectRelations {
-            for (_,oneRelation) in oneRelations {
+            for (_,oneRelation) in oneRelations { 
                 try oneRelation.decode(decoder: self, parentJson: item)
             }
         }
         
-        let relations = entity.relationshipsByName
-        
-        for (name, relation) in relations {
-            
-            if(relation.isToMany){
-                //deal with it
-            }else {
-#if DEBUG
-    print("decoding single relation ---> \(name)")
-#endif
-                // here we have a relations
-                guard let relationData:[String : AnyObject] = item[name] as? [String : AnyObject] else { continue}
-                var currentId:ModelId = 0
-                let relationObject = try self.decode(item: relationData, entity: relation.destinationEntity!, id:&currentId)
-                object.setValue(relationObject, forKey:name)
-            }
-        }
 #if DEBUG
     print("END decoding ---> \(String(describing: entity.name!)) id = \(id)")
  #endif
         return object
     }
+    
     
     private func parseValue(value:Any?, attribute:NSAttributeDescription) -> Any? {
         

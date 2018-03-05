@@ -79,13 +79,13 @@ class LaravelConnectClient {
      
      @return LaravelRequest.
      */
-    private func newConnectRequest(method: HTTPMethod = HTTPMethod.GET) -> LaravelRequest? {
+    private func newConnectRequest(method: HTTPMethod = HTTPMethod.GET) -> LaravelRequest {
         
         let request = self.newRequest(method: method)
         
         request?.addPathSegments(segments: self.settings.apiRootPathSegments)
         
-        return request
+        return request!
         
     }
     
@@ -103,10 +103,44 @@ class LaravelConnectClient {
         }
         
     }
+    
+    public func newOneRelationShow<T>(relation:ConnectOneRelation<T>) -> LaravelRequest {
+       
+        let request = self.newModelShow(model: type(of:relation.parent), modelId: relation.parent.primaryKeyValue, skipInclude:true)
+        request.addPathSegment(segment: relation.name)
+        setupModelIncludes(model: relation.relatedType, request: request, include: [])
+        return request
+    }
 
-    public func newModelShow(model: ConnectModel.Type, modelId: ModelId, include: [String] = []) -> LaravelRequest {
+    public func newModelSave(model: ConnectModel) -> LaravelRequest {
         
-        let request = self.newConnectRequest()!
+        let request = self.newConnectRequest(method: .POST)
+        
+        request.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, showModel:type(of:model)))
+        
+        request.addPathSegment(segment: model.modelPath)
+
+        if(model.primaryKeyValue != CONST_MODEL_ID_UNSET){
+            request.addPathSegment(segment: String(describing: model.primaryKeyValue))
+        }
+        
+        let attributes = model.attributes
+        
+        for (name,value) in model.changedValues() {
+            
+            if let attribute = attributes[name],
+                let jKey:String = attribute.jsonKey{
+                request.addQueryParameter(name: jKey, value: String(describing: value) )
+            }
+            
+        }
+
+        return request
+    }
+    
+    public func newModelShow(model: ConnectModel.Type, modelId: ModelId, include: [String] = [], skipInclude:Bool = false) -> LaravelRequest {
+        
+        let request = self.newConnectRequest()
         
         request.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, showModel:model))
         
@@ -116,18 +150,27 @@ class LaravelConnectClient {
 
         request.addPathSegment(segment: String(describing: modelId))
         
-        
-        setupModelIncludes(model: model, request: request, include: include)
+        if(skipInclude == false){
+            setupModelIncludes(model: model, request: request, include: include)
+        }
         
         return request
     }
     
     public func newModelList<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, include: [String] = []) -> LaravelRequest {
         
+        var receivedDataModel = model
         
-        let request = self.newConnectRequest()!
+        if relation != nil,
+            let relatedType = relation?.relatedType  {
+            receivedDataModel = relatedType
+        }
         
-        request.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, model:model))
+        let request = self.newConnectRequest()
+
+        request.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, model:receivedDataModel))
+            setupModelIncludes(model: receivedDataModel, request: request, include: include)
+        
 
         if let modelPah:String = self.coredata.pathForModel(model: model) {
             request.addPathSegment(segment: modelPah)
@@ -135,30 +178,12 @@ class LaravelConnectClient {
         
         // add path to relations like for example users/2/cars
         if let relation = relation,
-            let parentId:Any = relation.parent.primaryKey {
+            let parentId:Any = relation.parent.primaryKeyValue {
             request.addPathSegment(segment: String(describing: parentId))
             request.addPathSegment(segment: relation.name)
         }
         
-//        var includes = Array(include)
-//
-//        if self.settings.apiIncludeOneRelations == true,
-//            model.entity().oneRelations.count > 0{
-//            //loop over the one relations and include
-//            var oneRelations = Set(model.entity().oneRelations.keys)
-//            for s in include {
-//                oneRelations.insert(s)
-//            }
-//
-//            includes = Array(oneRelations)
-//        }
-//
-//        if  includes.count > 0 {
-//            let value = includes.joined(separator: ",")
-//            request?.addQueryParameter(name: "include", value: value)
-//        }
-        
-        setupModelIncludes(model: model, request: request, include: include)
+
         
         return request
     }

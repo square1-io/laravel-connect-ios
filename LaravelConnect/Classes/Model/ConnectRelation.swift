@@ -8,7 +8,17 @@
 import Foundation
 import CoreData
 
-open class ConnectRelation : NSObject {
+public protocol ConnectRelationProtocol {
+    
+    var jsonKey:String {get}
+    var name:String {get}
+    var parent: ConnectModel {get}
+    var parentType:ConnectModel.Type {get}
+    var relatedType:ConnectModel.Type {get}
+    func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) throws
+}
+
+open class ConnectRelation<T: ConnectModel> : ConnectRelationProtocol {
     
     //the key that identify this relation in the received json
     public var jsonKey:String {
@@ -24,23 +34,25 @@ open class ConnectRelation : NSObject {
         }
     }
     
-    public var parentModel:ConnectModel.Type {
+    public var parentType:ConnectModel.Type {
         
         get {
             return type(of: self.parent)
         }
     }
     
-    public var relatedModel:ConnectModel.Type {
+    public var relatedType:ConnectModel.Type {
         
         get {
             return NSClassFromString((self.relationDescription.destinationEntity?.managedObjectClassName)!) as! ConnectModel.Type
         }
     }
     
+
+    
     let relationDescription: NSRelationshipDescription
     //the parent ManagedObject that owns this relation
-    let parent: ConnectModel
+    public let parent: ConnectModel
     
     required public init(parent:ConnectModel, description:NSRelationshipDescription){
         self.parent = parent
@@ -49,27 +61,23 @@ open class ConnectRelation : NSObject {
     
     public func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) throws {}
 }
-protocol ConnectOneRelationProtocol {
-    
-
+protocol ConnectOneRelationProtocol : ConnectRelationProtocol {
     
     var relatedId: ModelId? {get}
-    var relatedModel:ConnectModel.Type {get}
-    var name:String {get}
-    
     func object() -> ConnectModel?
     
-}
-open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRelationProtocol {
+    func refresh(done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask
     
-    typealias K  = T
+}
+open class ConnectOneRelation<T:ConnectModel> : ConnectRelation<T>, ConnectOneRelationProtocol {
+
     //the Managed Object for this relation if one is set
     var related: T? {
         set {
             self.parent.setValue(newValue, forKey: self.name)
         }
         get {
-            return  self.parent.value(forKey: self.name) as? T
+            return self.parent.value(forKey: self.name) as? T
         }
     }
     
@@ -99,10 +107,11 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
         let attributes = parent.attributes
         
         // build a map between the jsonKey and the name of the corresponding member
- 
         for (name, attribute) in attributes {
             if(self.jsonForeignKey.elementsEqual(attribute.jsonKey)) {
                 self.coreDataForeignKey = name
+                //we exclude the foreigh key for the list of editable fields.
+                self.parent.setNonEditable(field: name)
                 break
             }
         }
@@ -126,12 +135,16 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
         return self.related
     }
     
+    public func refresh(done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
+        return LaravelConnect.shared().get(relation:self, done: done)
+    }
+    
     private func getRelatedId() -> ModelId? {
         
         //is the full related object available?
         if self.related != nil,
-            self.related?.primaryKey != nil {
-            return self.related?.primaryKey
+            self.related?.primaryKeyValue != nil {
+            return self.related?.primaryKeyValue
         }
         //try the foreign key if set on the parent object
         if let p = self.parent.properyByJsonKey(jsonKey: self.jsonForeignKey) {
@@ -145,8 +158,9 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
      
      */
     public override func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) throws {
-        
-        
+#if DEBUG
+    print("decoding single relation ---> \(self.name)")
+#endif
         ///set the relation foign key value
         if let relatedId = parentJson[self.jsonForeignKey],
             let cdProperty = self.coreDataForeignKey,
@@ -156,42 +170,47 @@ open class ConnectOneRelation<T: ConnectModel> : ConnectRelation, ConnectOneRela
         
         // parse the relation json if it was included
         if let data = parentJson[self.jsonKey] as? [String: AnyObject],
-            let entity = self.relationDescription.destinationEntity{
+            let entity = self.relationDescription.destinationEntity {
             var newId:ModelId = 0
             let relatedObject = try decoder.decode(item: data, entity: entity, id: &newId)
             self.related = relatedObject as! T
+        }
+        // if the json for the related object was not passed but if we have the foreign key we create
+        // an empty coreData object
+        else if let relatedId = parentJson[self.jsonForeignKey] as? ModelId,
+            let entity = self.relationDescription.destinationEntity {
+            self.related = try decoder.findOrCreate(entity:entity, id:relatedId)  as! T
         }
 
     }
     
 }
 
-public class ConnectManyRelation<T: ConnectModel> : ConnectRelation {
+public protocol ConnectManyRelationProtocol : ConnectRelationProtocol {
     
-    private var related: Set<T>
+    func list() -> ModelList
+    func list(filter: Filter , include:[String] ) -> ModelList
+}
+
+public class ConnectManyRelation<T: ConnectModel> : ConnectRelation<T>, ConnectManyRelationProtocol {
+    
+    private var set:NSMutableSet!
     
     public required init(parent: ConnectModel,
                          description: NSRelationshipDescription){
-        
-        self.related = Set()
         super.init(parent:parent, description: description)
+        self.set = parent.mutableSetValue(forKey: self.name)
+    }
+    
+    public func list() -> ModelList {
+        
+        return LaravelConnect.shared()
+            .list(model:self.parentType, relation:self)
         
     }
-    
     public func list(filter: Filter = Filter(), include:[String] = []) -> ModelList {
-        return LaravelConnect.shared().list(model:self.parentModel, relation:self, filter:filter, include:include)
+        return LaravelConnect.shared().list(model:self.parentType, relation:self, filter:filter, include:include)
     }
     
-    /*
-     
-    */
-//    public func decode(decoder:CoreDataDecoder, parentJson:[String: AnyObject]) {
-//
-//        //if there is no json for the object try extracting at least the key
-//        guard let item[self.jsonKey] else {
-//
-//        }
-//
-//    }
-    
+
 }

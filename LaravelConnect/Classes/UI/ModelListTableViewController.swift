@@ -6,11 +6,18 @@
 //
 
 import UIKit
+import CoreData
 
-class ModelListTableViewController: UITableViewController {
+class ModelListTableViewController: UITableViewController, ModelListOptionsDelegate, UISearchBarDelegate {
+    
 
-    private var list: ModelList?
-    private var modelInfo: ModelInfo?
+    public  var list: ModelList?
+    private var presenter:ModelPresenter?
+    
+    private var searchTerm:String!
+    private var searchableAttributes:[String:NSAttributeDescription]!
+    private var selectedSearchableAttributes:[String:NSAttributeDescription]!
+    
     private var subtitleLabel: UILabel?
     
     @IBAction func cancel(sender: AnyObject) {
@@ -20,28 +27,57 @@ class ModelListTableViewController: UITableViewController {
         }
     }
     
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let navController:ModelNavigationController = self.navigationController as! ModelNavigationController
-    
-        self.modelInfo = navController.modelInfo
-    
-        let md:ConnectModel.Type = (self.modelInfo?.modelType)!
-        self.navigationItem.titleView = setTitle(title: String(describing:md), subtitle: "                     ")
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
+        self.searchTerm = ""
+        self.searchableAttributes = Dictionary()
+        self.selectedSearchableAttributes = Dictionary()
 
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        guard let ctype:ModelInfo = self.modelInfo else { return}
+        if let attrs = self.list?.entity.attributesByName {
+ 
+            for (name,a) in attrs {
+                if let type:String = a.attributeValueClassName,
+                    type.elementsEqual("NSString"){// only let the search operate on NSString fields for now
+                    self.searchableAttributes[name] = a
+                    self.selectedSearchableAttributes[name] = a
+                }
+            }
+        }
         
-        self.list = ctype.modelType.list()
+        if let name = self.list?.entity.name {
+            self.presenter = LaravelConnect.shared().presenterForClass(className: name)
+            self.navigationItem.titleView = setTitle(title: name, subtitle: "                     ")
+        }
+        
+       
+        
+        let control = UIRefreshControl()
+        control.backgroundColor = UIColor.lightGray
+        control.tintColor = UIColor.darkGray
+        control.addTarget(self,action: #selector(refreshList), for: UIControlEvents.valueChanged)
+        
+        self.refreshControl = control
         
         self.loadNextPage()
     }
 
+    @objc private func refreshList(){
+        
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        self.refreshControl?.beginRefreshing()
+        self.list?.cancel()
+        self.list?.refresh(done:{(newIds:[ModelId]?, error:Error?) in
+            guard error == nil else {return;}
+            self.updateSubTitle()
+            self.tableView.reloadData()
+            self.tableView.setContentOffset(CGPoint.zero, animated: false)
+            self.refreshControl?.endRefreshing()
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        });
+    }
 
     func setTitle(title:String, subtitle:String) -> UIView {
         //x: CGFloat, y: CGFloat, width: CGFloat, height:
@@ -109,11 +145,13 @@ class ModelListTableViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "modelSummaryCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ModelSummaryTableViewCell", for: indexPath)
         
-        let currentItem:ConnectModel = self.list![indexPath.row]!
-        cell.textLabel?.text = self.modelInfo?.modelTitle(currentItem)
-        cell.detailTextLabel?.text = self.modelInfo?.modelSubtitle(currentItem)
+        if let currentItem:ConnectModel = self.list![indexPath.row],
+            let c:ModelSummaryTableViewCell = cell as? ModelSummaryTableViewCell{
+            c.labelMain.text = self.presenter?.modelTitle(model: currentItem)
+            c.labelSubText.text = self.presenter?.modelSubtitle(model:currentItem)
+        }
         return cell
     }
     
@@ -158,6 +196,16 @@ class ModelListTableViewController: UITableViewController {
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if let identified = segue.identifier,
+            identified.elementsEqual("OptionsSegue") {
+            if let controller:ModelOptionsNavigationController = segue.destination as? ModelOptionsNavigationController {
+                    controller.listDelegate = self
+                    controller.list = self.list
+                    controller.selectedSearchableAttributes = self.selectedSearchableAttributes
+                    controller.searchableAttributes = self.searchableAttributes
+            }
+        }else {
 
         let indexPath = self.tableView.indexPathForSelectedRow
         
@@ -170,6 +218,7 @@ class ModelListTableViewController: UITableViewController {
         //controller.model = 
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        }
     }
     
      func updateSubTitle(){
@@ -191,6 +240,53 @@ class ModelListTableViewController: UITableViewController {
             
  
         }
+    }
+
+    func onNewListAvailable(newList:ModelList, selectedSearchableAttributes: [String : NSAttributeDescription]) {
+        self.list = newList
+        self.selectedSearchableAttributes = selectedSearchableAttributes
+        self.list = self.applyFilterIfNeeded()
+        refreshList()
+    }
+    
+    private func applyFilterIfNeeded() -> ModelList {
+        
+        let filter = Filter()
+        
+        if self.searchTerm.isEmpty == false,
+            let l:ModelList = self.list {
+
+            if let attrs = self.selectedSearchableAttributes {
+                
+                for (_,a) in attrs {
+                    filter.or().contains(param: a.jsonKey, value: self.searchTerm)
+                }
+            }
+            
+            let res = filter.serialize()
+            print(" ================================ ")
+            print("FILTER = \(res)")
+            print(" ================================ ")
+            return l.clone(newFilter:filter, newSort: nil)
+        }
+        
+        return self.list!.clone(newFilter: filter, newSort: nil)
+        
+    }
+    
+    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchTerm = searchText
+        self.list = self.applyFilterIfNeeded()
+        refreshList()
+    }
+    
+
+    
+    public func searchBarSearchButtonClicked(_ searchBar:UISearchBar){
+        searchBar.resignFirstResponder()
+        self.searchTerm = searchBar.text
+        self.list = self.applyFilterIfNeeded()
+        refreshList()
     }
 
 }

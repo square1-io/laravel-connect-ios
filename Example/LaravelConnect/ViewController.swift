@@ -12,9 +12,13 @@ import LaravelConnect
 class ViewController: UIViewController {
 
     private var browserStoryBoard: UIStoryboard?
+    private var sortByName: Sort!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.sortByName = Sort()
+        self.sortByName.add(field: "name", order: .ASC)
         
         self.browserStoryBoard = LaravelConnect.storyBoard()
         // Do any additional setup after loading the view, typically from a nib.
@@ -29,15 +33,12 @@ class ViewController: UIViewController {
   
         guard let vc:ModelNavigationController = self.browserStoryBoard?
             .instantiateInitialViewController() as! ModelNavigationController else {return}
+   
+
         
-        var info = ModelInfo(modelType:City.self,
-                             modelTitle:{(model) in
-                                let city = model as! City
-                                return city.name},
-                             modelSubtitle:{(model) in
-                                let city = model as! City
-                                return city.localName})
-        vc.modelInfo = info
+        vc.list = City.list()
+            .clone(newFilter: nil, newSort: self.sortByName )
+        
         self.show(vc, sender: self)
     }
     
@@ -46,14 +47,8 @@ class ViewController: UIViewController {
         guard let vc:ModelNavigationController = self.browserStoryBoard?
             .instantiateInitialViewController() as! ModelNavigationController else {return}
         
-        let info = ModelInfo(modelType:Country.self,
-                             modelTitle:{(model) in
-                                let country = model as! Country
-                                return country.name},
-                             modelSubtitle:{(model) in
-                                let country = model as! Country
-                                return country.code})
-        vc.modelInfo = info
+
+        vc.list = Country.list().clone(newFilter: nil, newSort: self.sortByName )
         self.show(vc, sender: self)
     }
     
@@ -62,14 +57,8 @@ class ViewController: UIViewController {
         guard let vc:ModelNavigationController = self.browserStoryBoard?
             .instantiateInitialViewController() as! ModelNavigationController else {return}
         
-        let info = ModelInfo(modelType:User.self,
-                             modelTitle:{(model) in
-                                let u = model as! User
-                                return u.name},
-                             modelSubtitle:{(model) in
-                                let u = model as! User
-                                return u.email})
-        vc.modelInfo = info
+
+        vc.list = User.list().clone(newFilter: nil, newSort: self.sortByName )
         self.show(vc, sender: self)
     }
     

@@ -54,7 +54,7 @@ public class LaravelCoreDataMoldelListResponseFactory : LaravelDefaultResponseFa
     
     
     public override func responseForData(_ data: Data) throws -> LaravelResponse {
-        let reponse:LaravelPaginatedModelResponse = try super.responseForData(data) as! LaravelPaginatedModelResponse
+        let reponse = try super.responseForData(data)
         try reponse.storeModelObjects(coreData: self.coreData, model: self.model)
         return reponse
     }

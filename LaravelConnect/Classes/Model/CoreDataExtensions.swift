@@ -34,12 +34,24 @@ let CONST_LARAVEL_COREDATA_PRIMARY_KEY = "laravel.cd.primary.key"
 let CONST_LARAVEL_MODEL_PATH_KEY = "laravel.model.path"
 
 public typealias ModelId = Int64
+let CONST_MODEL_ID_UNSET:ModelId = 0
 
 extension NSEntityDescription {
     
     var modelPath : String {return  self.userInfo?[CONST_LARAVEL_MODEL_PATH_KEY] as! String}
     
+    
+    /// Coredata property name for the primary key
     var primaryKeyName: String { return self.userInfo?[CONST_LARAVEL_COREDATA_PRIMARY_KEY] as! String }
+    
+    /// Json key for the primary key
+    var primaryKeyJsonKey: String {
+        
+        if let attribute:NSAttributeDescription = self.attributesByName[self.primaryKeyName] {
+            return attribute.jsonKey
+        }
+        return "id"
+    }
     
     public var oneRelations:[String : NSRelationshipDescription] {
         
@@ -62,7 +74,12 @@ extension NSEntityDescription {
 
 extension NSPropertyDescription {
     
-    var jsonKey: String { return self.userInfo?[CONST_LARAVEL_JSON_KEY] as! String }
+    var jsonKey: String {
+        if let uInfo = self.userInfo,
+            let k = uInfo[CONST_LARAVEL_JSON_KEY] {
+            return k as! String
+        }
+        return "" }
     
 }
 
@@ -75,127 +92,11 @@ extension NSRelationshipDescription {
 
 
 
-open class ConnectModel: NSManagedObject, Managed {
-    
-    open override func awakeFromInsert() {
-        super.awakeFromInsert()
-        mapProperties()
-        setupRelations()
-    }
-    
-    open override func awakeFromFetch() {
-        super.awakeFromFetch()
-        mapProperties()
-        setupRelations()
-    }
-    
-    open func setupRelations() {
-        
-    }
-    
-    private func mapProperties(){
-        
-        var map = Dictionary<String, NSPropertyDescription>()
-        
-        for p in self.entity.properties {
-            map[p.jsonKey] = p
-        }
-        
-        self.jsonKeyToProperty = map
-    }
-    
-    private var jsonKeyToProperty:Dictionary<String, NSPropertyDescription>?
-    
-    public func properyByJsonKey(jsonKey:String) -> NSPropertyDescription? {
-        
-        if let p = self.jsonKeyToProperty {
-            return p[jsonKey]
-        }
-        return nil
-    }
- 
-    public var modelPath:String {
-        get {
-            return self.entity.modelPath
-        }
-    }
-    
-    /*
-     All properties that are not relations
-    */
-    public var attributes:[String : NSAttributeDescription] {
-
-        get {
-           return  self.entity.attributesByName
-        }
-    }
-    
-    /*
-      The value of the primary key for this instance
-     */
-    public var primaryKey: ModelId {
-        
-        get {
-            //get the name of the property first
-            let propertyName = self.entity.primaryKeyName
-            if  self.attributes[propertyName] != nil,
-                let modelId = self.value(forKey: propertyName) as? ModelId  {
-                return modelId
-            }
-            return 0
-        }
-        
-    }
-    
-    public var oneRelations:[String : NSRelationshipDescription] {
-    
-        get {
-            return  self.entity.oneRelations
-        }
-    }
-    
-    public var manyRelations:[String : NSRelationshipDescription] {
-        
-        get {
-            return  self.entity.manyRelations
-        }
-    }
-    
-    public private(set) var connectRelations:Dictionary<String, ConnectRelation>?
-    
-    static func findWithId(in context: NSManagedObjectContext, id:ModelId) -> Self? {
-        let predicate = NSPredicate(format: self.entity().primaryKeyName + " == %i",id)
-        return self.findOrFetch(in: context, matching: predicate )
-    }
-
-    
-    public func setupRelation<T:ConnectRelation>(name:String) -> T {
-        
-        if(self.connectRelations == nil){
-            self.connectRelations = Dictionary()
-        }
-        
-        let relations:[String : NSRelationshipDescription] = self.entity.relationshipsByName
-        let relation = T(parent: self, description:relations[name]!)
-        self.connectRelations![name] = relation
-        return relation
-        
-    }
-    
-    public func refresh(include:[String] = [], done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
-        return LaravelConnect.shared().get(model:type(of: self), modelId: self.primaryKey, include:include, done: done)
-    }
-
-    public static func get(modelId: ModelId, include:[String] = [], done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
-        return LaravelConnect.shared().get(model:self, modelId: modelId, include:include, done: done)
-    }
-    
-    public static func list(filter: Filter = Filter(), include:[String] = []) -> ModelList {
-        return LaravelConnect.shared().list(model:self, relation:nil, filter:filter, include:include)
-    }
-}
-
 public extension Array {
+    
+    /*
+     
+    */
     public func toDictionary<Key: Hashable>(with selectKey: (Element) -> Key) -> [Key:Element] {
         var dict = [Key:Element]()
         for element in self {
@@ -219,12 +120,15 @@ extension NSManagedObjectContext {
 
 extension Data {
     
-    public func toJSON() -> Dictionary<String,Any>  {
+    public func toJSON() -> Dictionary<String,AnyObject>  {
         do{
-            let json: Dictionary<String,Any> = try JSONSerialization.jsonObject(with: self, options: .allowFragments) as! Dictionary
+            let json: Dictionary<String,AnyObject> = try JSONSerialization.jsonObject(with: self, options: .allowFragments) as! Dictionary
             return json
-        } catch let _ as NSError {
-            return Dictionary()
+        } catch let error as NSError {
+#if DEBUG
+    print(error)
+#endif
+        return Dictionary()
         }
     }
     

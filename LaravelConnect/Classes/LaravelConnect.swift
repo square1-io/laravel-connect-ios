@@ -27,9 +27,8 @@ import Square1CoreData
 
 public class LaravelConnect: NSObject {
     
-    private static var instance: LaravelConnect = {
-        let instance = LaravelConnect()
-        return instance
+    private static var instances: [String:LaravelConnect] = {
+     return Dictionary<String,LaravelConnect>()
     }()
     
     // MARK: - Properties
@@ -37,12 +36,33 @@ public class LaravelConnect: NSObject {
     private var settings: LaravelSettings!
     private var dataManager: CoreDataManager!
     
+    private var presentersMap:Dictionary<String, ModelPresenter> = Dictionary()
+    
     // MARK: - Methods
-    public static func configure(settings : LaravelSettings, onCompletion: @escaping () -> ()){
-        instance.configure(settings:settings, onCompletion:onCompletion)
+
+    /// Setup a named instance of LaravelConnect. A name can be passed to connect at the same time to more then one Laravel APP.
+    ///
+    /// - Parameters:
+    ///   - name: name that identifies this instance. It can be left blank if only one instance is used
+    ///   - settings: LaravelSettings, settings for the connection.
+    ///   - onCompletion: bock that is called when the configuration is completed.
+    public static func configure(name:String = "default", settings: LaravelSettings, onCompletion: @escaping (_:LaravelConnect) -> ()){
+        self.instanceWithName(name:name).configure(settings:settings, onCompletion:onCompletion)
     }
     
-    private func configure(settings : LaravelSettings, onCompletion: @escaping () -> ()){
+    
+    private static func instanceWithName(name:String) -> LaravelConnect{
+        
+        if let instance = instances[name] {
+            return instance
+        }
+        
+        let instance = LaravelConnect()
+        instances[name]  = instance
+        return instance
+    }
+    
+    private func configure(settings : LaravelSettings, onCompletion: @escaping (_:LaravelConnect) -> ()){
         
         self.settings = settings
         self.dataManager = CoreDataManager(modelName: settings.coreDataModelName)
@@ -50,19 +70,54 @@ public class LaravelConnect: NSObject {
         self.dataManager.initCoreDataStack (completionClosure: {
             // create API client that will make all REST requests
             self.httpClient = LaravelConnectClient(settings:settings, coredata:self.dataManager)
-            onCompletion()
+            onCompletion(self)
         })
 
     }
     
     public static func shared() -> LaravelConnect {
-        return instance;
+        return instanceWithName(name: "default")
     }
 
     public func coreData() -> CoreDataManager {
         return self.dataManager;
     }
 
+    public func get<T:ConnectModel>(relation: ConnectOneRelation<T>,
+                    done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
+
+        let request:LaravelRequest = self.httpClient.newOneRelationShow(relation: relation)
+        
+        request.start(success: { (response) in
+            let r:LaravelSingleObjectModelResponse = response as! LaravelSingleObjectModelResponse
+           if let objId = r.id,
+                let obj = T.findWithId(in: self.coreData().viewContext, id: objId) {
+                //refresh the relation
+                relation.related = obj
+            }
+            done(r.managedId,nil)
+        }) { (error) in
+            done(nil,error)
+        }
+        return request
+        
+    }
+
+    public func save(model: ConnectModel,
+                    done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
+        
+        let request:LaravelRequest = self.httpClient.newModelSave(model: model)
+        
+        request.start(success: { (response) in
+            let r:LaravelSingleObjectModelResponse = response as! LaravelSingleObjectModelResponse
+            
+            done(r.managedId,nil)
+        }) { (error) in
+            done(nil,error)
+        }
+        return request
+    }
+    
     public func get(model: ConnectModel.Type, modelId: ModelId,
                         include:[String] = [],
                         done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
@@ -71,6 +126,7 @@ public class LaravelConnect: NSObject {
         
         request.start(success: { (response) in
             let r:LaravelSingleObjectModelResponse = response as! LaravelSingleObjectModelResponse
+            
             done(r.managedId,nil)
         }) { (error) in
             done(nil,error)
@@ -79,7 +135,11 @@ public class LaravelConnect: NSObject {
     }
     
     public func list<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, filter: Filter = Filter(), include:[String] = []) -> ModelList {
-        return ModelList(entity:NSStringFromClass(model),
+        var entity = model.entity()
+        if  let e = relation?.relatedType.entity() {
+            entity = e
+        }
+        return ModelList(entity:entity,
                          request:self.httpClient.newModelList(model:model, relation:relation, include:include),
                          filter:filter)
     }
@@ -90,6 +150,7 @@ public class LaravelConnect: NSObject {
         return entity?.modelPath
     }
     
+ // MARK: - Debugging tools
     
     public static func storyBoard() -> UIStoryboard {
         
@@ -99,6 +160,20 @@ public class LaravelConnect: NSObject {
         
         return UIStoryboard(name: "modelBrowser", bundle: bundle)
         
+    }
+    
+
+    public func presenterForClass(className: String) -> ModelPresenter {
+        
+        if let presenter = self.presentersMap[className] {
+            return presenter
+        }
+        
+        return DefaultPresenter()
+    }
+    
+    public func presenterForClass(className: String, presenter:ModelPresenter) {
+        self.presentersMap[className]  = presenter
     }
     
     

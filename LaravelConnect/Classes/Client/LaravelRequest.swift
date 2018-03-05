@@ -37,7 +37,7 @@ public typealias ErrorBlock = (_ : Error?) -> Void
 
 
 public protocol LaravelServiceResponse: WebServiceResponse {
-   init(with dictionary: [String: Any])
+   init(with dictionary: [String: AnyObject])
 }
 
 public protocol LaravelServiceRequest: WebServiceRequest where Task: URLSessionDataTask, Response: LaravelServiceResponse {
@@ -67,10 +67,14 @@ public extension LaravelServiceRequest {
 
 public class LaravelResponse: LaravelServiceResponse {
 
-    let data: [String : Any]
+    let data: [String : AnyObject]
     
-    public required init(with dictionary: [String: Any]) {
-        self.data = dictionary["data"] as! [String : Any]
+    public required init(with dictionary: [String: AnyObject]) {
+        self.data = dictionary["data"] as! [String : AnyObject]
+    }
+    
+    open func storeModelObjects(coreData: CoreDataManager, model: ConnectModel.Type) throws {
+        
     }
 }
 
@@ -78,9 +82,14 @@ public class LaravelPaginatedResponse: LaravelResponse {
     
     var pagination: Pagination?
     
-    public required init(with dictionary: [String : Any]) {
+    public required init(with dictionary: [String : AnyObject]) {
        super.init(with: dictionary)
-       self.pagination = Pagination(with: self.data["pagination"] as! [String : Any])
+        
+        if let pagData = self.data["pagination"]  as? [String : Any]{
+            self.pagination = Pagination(with: pagData)
+        }else {
+            self.pagination = Pagination()
+        }
     }
 
     public func page() -> Pagination? {
@@ -104,6 +113,7 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     public private(set) var state:State
     
     public func cancel() {
+        self.state = .Failed
         self.task?.cancel()
     }
     
@@ -143,6 +153,7 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     private var task: Task?
     private var responseType : Response.Type
     private var responseFactory : LaravelResponseFactory
+   
     
     init(method: HTTPMethod = HTTPMethod.GET,
           scheme: String = "http",
@@ -161,6 +172,18 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
         self.addRequestHeader(name:"Content-Type", value:"application/json")
         
     }
+    
+    init(request:LaravelRequest){
+        self.state = .Idle
+        self.method = request.method
+        self.session = request.session
+        self.responseType = request.responseType
+        self.responseFactory = request.responseFactory
+        self.baseUrl = request.baseUrl
+        self.path = request.path
+        self.headersDictionary = request.headersDictionary
+        self.queryParamsDictionary = request.queryParamsDictionary
+    }
 
     public func setResponseFactory(responseFactory: LaravelResponseFactory){
         self.responseFactory = responseFactory
@@ -175,6 +198,28 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
         }
     }
     
+    public func sort(sort:Sort) -> LaravelRequest{
+        
+        clearQueryParametesWithName(paramName:sort.paramName)
+        
+        let sortingOptions = sort.serialize()
+        for(name,value) in sortingOptions {
+            self.addQueryParameter(name: name, value: value)
+        }
+        return self
+    }
+    
+    public func filter(filter:Filter) -> LaravelRequest{
+        
+        clearQueryParametesWithName(paramName:filter.paramName)
+        
+        let filterOptions = filter.serialize()
+        for(name,value) in filterOptions {
+            self.addQueryParameter(name: name, value: value)
+        }
+        return self
+    }
+    
     public func addQueryParameter(name:String, value:String){
         self.queryParamsDictionary[name] = URLQueryItem(name:name, value:value)
     }
@@ -183,9 +228,22 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
         self.headersDictionary[name] = HeaderItem(name:name, value:value)
     }
     
+    private func clearQueryParametesWithName(paramName:String){
+        
+        let queryParamsCopy = self.queryParamsDictionary
+        for (name,_) in queryParamsCopy {
+            if  name.hasPrefix(paramName){
+                self.queryParamsDictionary.removeValue(forKey: name)
+            }
+    
+        }
+        
+    }
+    
     public func handleResponse(_ data: Data?, response: URLResponse?, error: NSError?) -> WebServiceResult<Response> {
         
         if let error = error {
+            self.logError(error: error)
             self.state = .Failed
             return .failure(error)
         }
@@ -219,7 +277,10 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     public func executeInSession(_ session: URLSession? = URLSession.shared,
                           completion: @escaping (WebServiceResult<Response>) -> ()) -> URLSessionDataTask? {
         let request = createRequest() as URLRequest
-        
+#if DEBUG
+    print(String(describing:request.url))
+#endif
+
         let task = session!.dataTask(with: request) { data, response, error in
             let result = self.handleResponse(data, response: response, error: error as NSError?)
             DispatchQueue.main.async {
@@ -230,6 +291,13 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
         task.resume()
         return task
     }
+
+    private func logError(error:Error){
+#if DEBUG
+        print("ERROR = \(error.localizedDescription)")
+#endif
+    }
+   
 }
 
 

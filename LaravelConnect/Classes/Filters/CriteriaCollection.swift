@@ -36,6 +36,11 @@ public class CriteriaCollection : NSObject {
     
     var criterias : [String: [String: [Criteria]]] = [String: [String: [Criteria]]]()
 
+    public var count:Int {
+        get {
+            return self.criterias.count
+        }
+    }
 
     public func contains(param: String, value: String){
         self.addCriteria(criteria: Criteria(param:param, verb:CONTAINS, value:value))
@@ -79,31 +84,31 @@ public class CriteriaCollection : NSObject {
         self.criterias[criteria.key]![criteria.verb]?.append(criteria)
     }
     
-    public func serialise() -> Array<String> {
+    public func serialise() -> Dictionary<String,String> {
         
-        var serialised = Array<String>()
+        var serialised = Dictionary<String,String>()
         
         for (key, criterias) in self.criterias {
             
             let criteriasList = self.serializeCriteriaCollection(criterias: criterias)
             
-            for index in (0 ..< criteriasList.count) {
-                let value : String = criteriasList[index]
-                serialised.append("[\(key)]\(value)" )
+            for (k,v) in criteriasList {
+                serialised["[\(key)]\(k)"] = v
+                //serialised.append("[\(key)]\(value)" )
             }
         }
         
         return serialised
     }
     
-    private func serializeCriteriaCollection(criterias: Dictionary<String, Array<Criteria>>) -> Array<String>{
+    private func serializeCriteriaCollection(criterias: Dictionary<String, Array<Criteria>>) -> Dictionary<String,String>{
         
-        var serialised = Array<String>()
+        var serialised = Dictionary<String,String>()
         
         for (key, list) in criterias {
             
             for  index in (0 ..< list.count){
-                serialised.append("[\(key)][\(index)]="+list[index].value)
+                serialised["[\(key)][\(index)]"] = "\(list[index].value)"
             }
         }
         

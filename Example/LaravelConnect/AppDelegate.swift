@@ -10,6 +10,30 @@ import UIKit
 import LaravelConnect
 import CoreData
 
+open class PhonePresenter : ModelPresenter {
+    
+    public func modelTitle(model:ConnectModel) -> String {
+        return model.stringAttribute(name: "number",defaultValue: "+000")
+    }
+    
+    public func modelSubtitle(model:ConnectModel) -> String {
+      return model.stringAttribute(name: "label", defaultValue: "+000")
+    }
+    
+}
+
+open class UserPresenter : ModelPresenter {
+    
+    public func modelTitle(model:ConnectModel) -> String {
+        return model.stringAttribute(name: "name",defaultValue: "anon")
+    }
+    
+    public func modelSubtitle(model:ConnectModel) -> String {
+        return model.stringAttribute(name: "email", defaultValue: "xx@xx.zz")
+    }
+    
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -19,18 +43,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         // Override point for customization after application launch.
-        LaravelConnect.configure(settings: SampleAppConnectSettings(), onCompletion: {
-         
-            var filter = Filter().contains(param: "medias.event_id", value: "1")
-                .contains(param: "medias.event_id", value: "2")
-                .contains(param: "medias.event_id", value: "3")
-                .or()
-                .equal(param: "id", value: "33")
-   
-
+        LaravelConnect.configure(settings: SampleAppConnectSettings(), onCompletion:  { (instance) in
+            print("LaravelConnect is Ready!")
+            instance.presenterForClass(className: "Phone", presenter: PhonePresenter())
+            instance.presenterForClass(className: "User", presenter: UserPresenter())
         });
     
-      
         
 //        //**
 //        "filter[0][medias.event_id][equal][0]": eventId,

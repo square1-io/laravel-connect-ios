@@ -25,11 +25,14 @@ import Foundation
 
 public class Filter : NSObject {
     
+    public let paramName:String
+    
     var filters : Array<CriteriaCollection> = []
     
-    public override init() {
-        super.init()
+    public init(paramName:String = "filter") {
+        self.paramName = paramName
         self.filters.append(CriteriaCollection())
+        super.init()
     }
     
     private var current: CriteriaCollection! {
@@ -39,7 +42,9 @@ public class Filter : NSObject {
     }
     
     public func or() -> Filter {
-        self.filters.append(CriteriaCollection())
+        if(self.current.count > 0){
+            self.filters.append(CriteriaCollection())
+        }
         return self
     }
     
@@ -78,9 +83,9 @@ public class Filter : NSObject {
         return self
     }
     
-    public func serialise(param: String) -> Array<String> {
+    public func serialize() -> Dictionary<String,String> {
         
-        var collections = Array<String>()
+        var collections = Dictionary<String,String>()
         
         var index : Int = 0
         
@@ -88,9 +93,9 @@ public class Filter : NSObject {
             
             let serialisedFilters = filter.serialise()
             
-            for ser in serialisedFilters {
-                let currentFilter = "\(param)[\(index)]" + ser
-                collections.append(currentFilter)
+            for (k,v) in serialisedFilters {
+                let currentFilter = "\(self.paramName)[\(index)]\(k)"
+                collections[currentFilter] = v
             }
             
             index = index + 1

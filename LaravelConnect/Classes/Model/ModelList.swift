@@ -49,11 +49,20 @@ public struct ModelListIterator: IteratorProtocol {
 
 public class ModelList : NSObject, Sequence {
     
-    private let request: LaravelRequest
+    private var request: LaravelRequest!
     private let filter: Filter
+    public let sort: Sort
     private var ids:[ModelId]
     private var items:Dictionary<ModelId, ConnectModel>
-    private let entity:String
+    public let entity:NSEntityDescription
+    public var entityName:String {
+        get {
+            if let n = self.entity.name {
+                return n
+            }
+            return ""
+        }
+    }
     
     public var count: Int {
         get  {
@@ -63,14 +72,35 @@ public class ModelList : NSObject, Sequence {
     
     public private(set) var currentPage: Pagination
     
-    init(entity:String, request:LaravelRequest, filter:Filter)  {
+    init(entity:NSEntityDescription, request:LaravelRequest, filter:Filter, sort:Sort = Sort())  {
         self.entity = entity
         self.request = request
         self.filter = filter
+        self.sort = sort
         self.ids = []
         self.items = Dictionary()
         self.currentPage = Pagination.NOPAGE
         super.init()
+        
+        self.request.filter(filter: filter)
+            .sort(sort: sort)
+    }
+    
+    public func clone(newFilter:Filter? = nil, newSort:Sort? = nil) -> ModelList {
+        
+        var s:Sort = self.sort
+        if  newSort != nil {
+            s = newSort!
+        }
+        
+        var f:Filter = self.filter
+        if  newFilter != nil {
+            f = newFilter!
+        }
+
+        return ModelList(entity:self.entity,
+                         request:self.request,
+                         filter:f, sort:s)
     }
     
     public func refresh(done:@escaping ([ModelId]?, Error?) -> Void) {
@@ -79,10 +109,18 @@ public class ModelList : NSObject, Sequence {
         self.nextPage(done: done)
     }
     
+    public func cancel() {
+        if(request.state == .Running){
+            request.cancel()
+        }
+    }
+    
     @discardableResult public func nextPage(done:@escaping ([ModelId]?, Error?) -> Void) -> Bool {
         
         if(self.currentPage.hasNext && request.state != .Running){
             
+            //create a new request
+            request = LaravelRequest(request: request)
             request.setPage(page: self.currentPage.nextPage)
             
             request.start(success: { (result) in
@@ -126,7 +164,7 @@ public class ModelList : NSObject, Sequence {
     private func reloadItems(context:NSManagedObjectContext = LaravelConnect.shared().coreData().viewContext) -> [ConnectModel] {
        
         do{
-            return try context.fetch(ids:self.ids, entityName:self.entity) as! [ConnectModel]
+            return try context.fetch(ids:self.ids, entityName:self.entity.name!) as! [ConnectModel]
         }
         catch let error as NSError {
 #if DEBUG
@@ -137,7 +175,4 @@ public class ModelList : NSObject, Sequence {
         return []
     }
     
-    public func cancel() {
-        self.request.cancel()
-    }
 }

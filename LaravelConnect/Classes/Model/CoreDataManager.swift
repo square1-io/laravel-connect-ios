@@ -85,7 +85,8 @@ public class CoreDataManager : NSObject {
     }
 
     public func entityDescriptionForClass(model: NSManagedObject.Type, context: NSManagedObjectContext) -> NSEntityDescription? {
-        return self.entityDescription(entityName: NSStringFromClass(model) , context: context)
+        return model.entity()
+        //return self.entityDescription(entityName: NSStringFromClass(model) , context: context)
     }
     
     public func entityDescription(entityName: String, context: NSManagedObjectContext) -> NSEntityDescription? {
@@ -93,11 +94,9 @@ public class CoreDataManager : NSObject {
     }
     
     public func pathForModel(model: NSManagedObject.Type) -> String {
-        let entity = self.entityDescriptionForClass(model: model, context: self.viewContext)
-        if let entity = entity {
-            return entity.modelPath
-        }
-        return ""
+
+            return model.entity().modelPath
+
     }
     
 }
