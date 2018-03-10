@@ -56,9 +56,11 @@ class BaseEditTableViewCell: UITableViewCell {
 
 
 
-public class ModelDetailsEditNavigationController: UINavigationController {
+public class ModelDetailsEditNavigationController: UINavigationController  {
+    
  
     public var model:ConnectModel!
+  
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -68,15 +70,21 @@ public class ModelDetailsEditNavigationController: UINavigationController {
     }
 }
 
-class ModelDetailsEditTableViewController : UITableViewController   {
+class ModelDetailsEditTableViewController : UITableViewController, ModelListTableViewDelegate   {
     
     public var model:ConnectModel!
+    private var presenter:ModelPresenter!
     
     private var editableFields:[String:EditHelper]!
     private var editableFieldsName:[String]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+    
+        self.presenter = LaravelConnect.shared().presenterForClass(className: self.model.className)
+        
+        self.setTitle()
         
         self.editableFields = Dictionary()
         self.editableFieldsName = Array()
@@ -102,6 +110,17 @@ class ModelDetailsEditTableViewController : UITableViewController   {
                 field = EditHelper(name: name, cellReusableId:"EditStringAttributeTableViewCell", initialValue: value, newValue: value)
             }
             self.editableFields[name] = field
+        }
+        
+        //add one relation
+        for(name,relation) in self.model.connectRelations {
+            
+            if let re:ConnectOneRelationProtocol = relation as? ConnectOneRelationProtocol {
+                self.editableFieldsName.append(name)
+                let field = EditHelper(name: name, cellReusableId:"EditOneRelationTableViewCell", initialValue: re.object(), newValue: re.object())
+                self.editableFields[name] = field
+            }
+
         }
 
         self.editableFieldsName.sort()
@@ -145,6 +164,17 @@ class ModelDetailsEditTableViewController : UITableViewController   {
             })
         }
         
+    }
+    
+    private func setTitle(){
+        
+        if let titleString = self.presenter?.modelTitle(model: self.model!) {
+            self.title =  titleString
+        }
+        else  if let id:Any = self.model?.primaryKeyValue,
+            let path:String = self.model?.modelPath{
+            self.title =  "\(path)\\\(id)"
+        }
     }
     
     private func showResultDialog (){
@@ -195,5 +225,42 @@ class ModelDetailsEditTableViewController : UITableViewController   {
     }
 
 
+    
+    // MARK: - Navigation
+    
+    func onItemsSelected(selected:Array<ConnectModel>, selectionMetaData:Any) {
+        
+        if var field:EditHelper = selectionMetaData as? EditHelper,
+            let selectedModel = selected.first,
+            let relation:ConnectOneRelationProtocol = self.model.connectRelations[field.name] as? ConnectOneRelationProtocol {
+           // relation.setObject(model: selectedModel)
+           field.newValue = selectedModel
+           self.editableFields[field.name] = field
+           self.tableView.reloadData()
+        }
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let indexPath = self.tableView.indexPathForSelectedRow
+        let name:String = self.editableFieldsName[(indexPath?.row)!]
+        let segueIdentifier:String = segue.identifier != nil ? segue.identifier! : ""
+        
+        if ("SelectSingleSegue".elementsEqual(segueIdentifier)) {
+            
+            if let controller:ModelListTableViewController = segue.destination as? ModelListTableViewController, let relation:ConnectOneRelationProtocol = self.model.connectRelations[name] as? ConnectOneRelationProtocol {
+                controller.mode = .SingleSelect
+                controller.modelListDelegate = self
+                if let field = self.editableFields[name] {
+                    controller.selectionMetaData = field
+                }
+                controller.list = relation.relatedType.list()
+            }
+        }
+
+        //OneRelationSegue
+        
+    }
     
 }

@@ -64,13 +64,16 @@ open class ConnectRelation<T: ConnectModel> : ConnectRelationProtocol {
 protocol ConnectOneRelationProtocol : ConnectRelationProtocol {
     
     var relatedId: ModelId? {get}
+
     func object() -> ConnectModel?
+    func setObject(object:ConnectModel)
     
     func refresh(done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask
     
 }
-open class ConnectOneRelation<T:ConnectModel> : ConnectRelation<T>, ConnectOneRelationProtocol {
-
+open class ConnectOneRelation<T> : ConnectRelation<T>, ConnectOneRelationProtocol where T : ConnectModel {
+    
+ 
     //the Managed Object for this relation if one is set
     var related: T? {
         set {
@@ -117,7 +120,13 @@ open class ConnectOneRelation<T:ConnectModel> : ConnectRelation<T>, ConnectOneRe
         }
     }
     
-    
+
+    public func setObject(object: ConnectModel) {
+        
+        if let object:T = object as? T {
+            self.related = object
+        }
+    }
     public func object() -> ConnectModel? {
         
         //if it is set then return it

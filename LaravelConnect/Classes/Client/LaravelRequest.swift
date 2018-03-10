@@ -22,7 +22,7 @@
 //
 
 import Foundation
-import Square1Network
+
 
 //Transform the binary data received during an http request to
 // a manageable format such as JSON or an Image
@@ -37,7 +37,7 @@ public typealias ErrorBlock = (_ : Error?) -> Void
 
 
 public protocol LaravelServiceResponse: WebServiceResponse {
-   init(with dictionary: [String: AnyObject])
+   init(data:Data) throws
 }
 
 public protocol LaravelServiceRequest: WebServiceRequest where Task: URLSessionDataTask, Response: LaravelServiceResponse {
@@ -45,34 +45,42 @@ public protocol LaravelServiceRequest: WebServiceRequest where Task: URLSessionD
 }
 
 public extension LaravelServiceRequest {
-    var accept: MIMEType? { return .json }
+    var accept: String? { return "application/json" }
     
-    @discardableResult
-    func executeInSession(_ session: URLSession? = URLSession.shared,
-                          completion: @escaping (WebServiceResult<Response>) -> ()) -> URLSessionDataTask? {
-        let request = createRequest() as URLRequest
-        
-        let task = session!.dataTask(with: request) { data, response, error in
-            let result = self.handleResponse(data, response: response, error: error as NSError?)
-            DispatchQueue.main.async {
-                completion(result)
-            }
-        }
-        
-        task.resume()
-        return task
-    }
 }
 
+public enum LaravelRequestError : Error {
+    case InvalidData
+}
 
 public class LaravelResponse: LaravelServiceResponse {
-
-    let data: [String : AnyObject]
+   
+    let json:[String:AnyObject]
+   // let error:[String:AnyObject]
     
-    public required init(with dictionary: [String: AnyObject]) {
-        self.data = dictionary["data"] as! [String : AnyObject]
+    public required init(data: Data) throws {
+        
+        self.json = try LaravelResponse.parseData(data: data.toJson())
+        try LaravelResponse.parseError(json: self.json)
+
+    }
+
+    private static func parseData(data:[String:AnyObject]?) throws -> [String:AnyObject] {
+        
+        if let j:[String:AnyObject] = data, let d:[String:AnyObject] = j.dictionaryValueForKey(key: "data")  {
+            return d
+        }
+        
+         throw LaravelRequestError.InvalidData
     }
     
+    private static func parseError(json:[String:AnyObject]) throws {
+        if let e:[String:AnyObject] = json.dictionaryValueForKey(key: "error"){
+            //self.error = e
+            throw LaravelRequestError.InvalidData
+        }
+    }
+
     open func storeModelObjects(coreData: CoreDataManager, model: ConnectModel.Type) throws {
         
     }
@@ -82,15 +90,16 @@ public class LaravelPaginatedResponse: LaravelResponse {
     
     var pagination: Pagination?
     
-    public required init(with dictionary: [String : AnyObject]) {
-       super.init(with: dictionary)
-        
-        if let pagData = self.data["pagination"]  as? [String : Any]{
+      public required init(data: Data) throws {
+       try super.init(data: data)
+
+        if let pagData:[String: Any] = self.json.dictionaryValueForKey(key: "pagination") {
             self.pagination = Pagination(with: pagData)
         }else {
             self.pagination = Pagination()
         }
     }
+    
 
     public func page() -> Pagination? {
         return pagination
@@ -108,8 +117,13 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     
     public typealias Response = LaravelResponse
     
-    public var accept: MIMEType? { return .json }
-
+    public var contentType: String? {
+        return "application/json"
+    }
+    
+    public var accept: String? { return  "application/json" }
+    public var requestBody: Data? { return nil }
+    
     public private(set) var state:State
     
     public func cancel() {
@@ -118,15 +132,17 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     }
     
     public func start(success:@escaping(LaravelResponse) -> (), failure:@escaping(Error) -> () ) {
+        
         self.state = .Running
+       
         self.task = executeInSession(self.session, completion: { (result) in
             
             switch (result) {
             case .success(let response):
-                success(response)
+                 success(response)
                 break
             case .failure(let error):
-                failure(error)
+                failure(error!)
             default:
                 break
             }
@@ -169,7 +185,7 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
         self.path = Array()
         self.headersDictionary = Dictionary()
         self.queryParamsDictionary = Dictionary()
-        self.addRequestHeader(name:"Content-Type", value:"application/json")
+       
         
     }
     
@@ -200,7 +216,7 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     
     public func sort(sort:Sort) -> LaravelRequest{
         
-        clearQueryParametesWithName(paramName:sort.paramName)
+        clearQueryParametesMatchingName(paramName:sort.paramName)
         
         let sortingOptions = sort.serialize()
         for(name,value) in sortingOptions {
@@ -211,7 +227,7 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     
     public func filter(filter:Filter) -> LaravelRequest{
         
-        clearQueryParametesWithName(paramName:filter.paramName)
+        clearQueryParametesMatchingName(paramName:filter.paramName)
         
         let filterOptions = filter.serialize()
         for(name,value) in filterOptions {
@@ -228,17 +244,52 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
         self.headersDictionary[name] = HeaderItem(name:name, value:value)
     }
     
-    private func clearQueryParametesWithName(paramName:String){
+    private func clearQueryParametesMatchingName(paramName:String){
         
         let queryParamsCopy = self.queryParamsDictionary
         for (name,_) in queryParamsCopy {
             if  name.hasPrefix(paramName){
                 self.queryParamsDictionary.removeValue(forKey: name)
             }
-    
         }
-        
     }
+    
+    public func serializeArray(output:inout [String:String], name:String, values:Array<Any>){
+
+        for (key, value) in values.enumerated(){
+            let currentName = "\(name)[\(key)]"
+            switch value {
+                case _  as Array<Any>:
+                    self.serializeArray(output: &output, name: currentName, values: value as! Array<Any>)
+                break
+            case  _ as Dictionary<String,Any>:
+                self.serializeDictionary(output: &output, name: currentName, values: value as! Dictionary<String,Any>)
+                break
+                 default:
+                    output[currentName] = String(describing:value)
+                break
+            }
+        }
+    }
+    
+    public func serializeDictionary(output:inout [String:String], name:String, values:Dictionary<String,Any>){
+        
+        for (key, value) in values{
+            let currentName = "\(name)[\(key)]"
+            switch value {
+            case _  as Array<Any>:
+                self.serializeArray(output: &output, name: currentName, values: value as! Array<Any>)
+                break
+            case  _ as Dictionary<String,Any>:
+                self.serializeDictionary(output: &output, name: currentName, values: value as! Dictionary<String,Any>)
+                break
+            default:
+                output[currentName] = String(describing:value)
+                break
+            }
+        }
+    }
+    
     
     public func handleResponse(_ data: Data?, response: URLResponse?, error: NSError?) -> WebServiceResult<Response> {
         
@@ -263,7 +314,7 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
             self.state = .Finished
             return .success(laravelResponse)
             
-        } catch let error as NSError {
+        } catch let error as Error {
 #if DEBUG
     print(error)
 #endif
@@ -276,7 +327,7 @@ public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
     @discardableResult
     public func executeInSession(_ session: URLSession? = URLSession.shared,
                           completion: @escaping (WebServiceResult<Response>) -> ()) -> URLSessionDataTask? {
-        let request = createRequest() as URLRequest
+        let request = self.request as URLRequest
 #if DEBUG
     print(String(describing:request.url))
 #endif
@@ -310,6 +361,134 @@ extension LaravelRequest {
 
 }
 
+class LaravelPostRequest: LaravelRequest {
+    
+    var files: [FileUpload]!
+    var bodyParams: [String: String]!
+    
+    override var method: HTTPMethod { return .POST }
+    
+    var boundary: String  {
+        return "boundary-d481cbe95f0e7a59ec7f93e6ede5dd05e3291a3c"
+    }
+    
+
+    override public var contentType: String? {
+        return "multipart/form-data; boundary=\(boundary)"
+    }
+    
+    init(scheme: String = "http",
+         host: String,
+         session: URLSession,
+         responseType: Response.Type = LaravelPaginatedResponse.self)   {
+        super.init(method: .POST, scheme: scheme, host: host, session: session, responseType: responseType)
+        self.files = []
+        self.bodyParams = [:]
+    }
+    
+    init(request:LaravelPostRequest){
+        super.init(request: request)
+        self.files = request.files
+        self.bodyParams = request.bodyParams
+    }
+    
+   override public var requestBody: Data?   {
+        
+        let body = NSMutableData()
+        
+        // Request Body
+        for file in files {
+            body.append(data(for: file))
+        }
+        
+        for (key, value) in bodyParams {
+            body.append(data(for: key, and: value))
+        }
+        
+        if body.length > 0 {
+            body.append("--\(boundary)--")
+            
+        }
+#if DEBUG
+    print(String(data: body as Data, encoding: String.Encoding.utf8) as String!)
+#endif
+        return body as Data
+        
+    }
+    
+    public func addPostParam(name:String, value:Any) {
+        self.bodyParams[name] = String(describing: value)
+    }
+
+    public func addPostParamArray(name:String, values:Array<Any>) {
+        
+        var out = Dictionary<String,String>();
+        self.serializeArray(output: &out, name: name, values: values)
+        
+        for(name,value) in out {
+           self.addPostParam(name: name, value: value)
+        }
+    }
+    
+    public func addPostParamDictionary(name:String, values:Dictionary<String,Any>) {
+        
+        var out = Dictionary<String,String>();
+        self.serializeDictionary(output: &out, name: name, values: values)
+        
+        for(name,value) in out {
+            self.addPostParam(name: name, value: value)
+        }
+    }
+    
+    // MARK: - Private
+    fileprivate func data(for file: FileUpload) -> Data {
+        let data = NSMutableData()
+        
+        data.append("--\(boundary)\r\n")
+        data.append("Content-Disposition: attachment; name=\"\(file.name)\"; filename=\"\(file.fileName)\"\r\n")
+        
+        if let mimeType = file.mimeType {
+            data.append("Content-Type: \(mimeType)\r\n\r\n")
+        } else {
+            data.append("Content-Type: application/octet-stream\r\n\r\n")
+        }
+        
+        data.append(file.data)
+        data.append("\r\n")
+        
+        return data as Data
+    }
+    
+    fileprivate func data(for key: String, and value: String ) -> Data {
+        let data = NSMutableData()
+        
+        data.append("--\(boundary)\r\n")
+        data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+        data.append("\(value)\r\n")
+        
+        return data as Data
+    }
+    
+}
+
+public class LaravelRequestFactory {
+    
+   public static func initRequest(method: HTTPMethod = HTTPMethod.GET,
+                               scheme: String = "http",
+                               host: String,
+                               session: URLSession,
+                               responseType: LaravelResponse.Type = LaravelPaginatedResponse.self) -> LaravelRequest{
+        
+        switch method {
+        case .POST:
+            return LaravelPostRequest(scheme: scheme, host: host, session: session, responseType: responseType)
+        default:
+            return LaravelRequest(method: method, scheme: scheme, host: host, session: session, responseType: responseType)
+        }
+        
+    }
+    
+}
 
 
 

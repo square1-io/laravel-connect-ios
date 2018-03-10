@@ -9,7 +9,6 @@ import Foundation
 
 import Foundation
 import Square1CoreData
-import Square1Network
 import CoreData
 
 
@@ -45,7 +44,7 @@ public class LaravelDefaultResponseFactory : LaravelResponseFactory {
     }
     
     public func responseForData(_ data: Data) throws -> LaravelResponse {
-        return self.responseType.init(with: data.toJSON())
+        return try self.responseType.init(data: data)
     }
 }
 

@@ -407,7 +407,6 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-LaravelConnect_Example/Pods-LaravelConnect_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/LaravelConnect/LaravelConnect.framework",
 				"${BUILT_PRODUCTS_DIR}/Square1CoreData/Square1CoreData.framework",
-				"${BUILT_PRODUCTS_DIR}/Square1Network/Square1Network.framework",
 				"${BUILT_PRODUCTS_DIR}/Square1Tools/Square1Tools.framework",
 				"${BUILT_PRODUCTS_DIR}/Sync/Sync.framework",
 			);
@@ -415,7 +414,6 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LaravelConnect.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Square1CoreData.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Square1Network.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Square1Tools.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sync.framework",
 			);

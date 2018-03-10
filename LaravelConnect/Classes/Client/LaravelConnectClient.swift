@@ -24,7 +24,6 @@
 
 import Foundation
 import Square1CoreData
-import Square1Network
 import CoreData
 
 
@@ -60,7 +59,7 @@ class LaravelConnectClient {
      */
     private func newRequest(method: HTTPMethod = HTTPMethod.GET) -> LaravelRequest? {
         
-        let request =  LaravelRequest(method: method,
+        let request =  LaravelRequestFactory.initRequest(method: method,
                               scheme: settings.httpScheme,
                               host: settings.apiHost,
                               session: self.session)
@@ -114,7 +113,7 @@ class LaravelConnectClient {
 
     public func newModelSave(model: ConnectModel) -> LaravelRequest {
         
-        let request = self.newConnectRequest(method: .POST)
+        let request:LaravelPostRequest = self.newConnectRequest(method: .POST) as! LaravelPostRequest
         
         request.setResponseFactory(responseFactory: LaravelCoreDataMoldelListResponseFactory(coreData:self.coredata, showModel:type(of:model)))
         
@@ -126,15 +125,13 @@ class LaravelConnectClient {
         
         let attributes = model.attributes
         
-        for (name,value) in model.changedValues() {
-            
-            if let attribute = attributes[name],
-                let jKey:String = attribute.jsonKey{
-                request.addQueryParameter(name: jKey, value: String(describing: value) )
-            }
-            
+        for (jsonKey,value) in model.changedProperties {
+            request.addPostParam(name: jsonKey, value: value)
         }
 
+        request.addPostParamDictionary(name: "relations", values: model.changedOneRelation)
+        print(model.changedOneRelation)
+      
         return request
     }
     

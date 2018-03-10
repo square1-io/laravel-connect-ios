@@ -179,6 +179,47 @@ open class ConnectModel: NSManagedObject, Managed {
     }
     
     
+    /// Dictionary of the properties changed for this model keyed by their Json key. This is ready to be sent over to the
+    /// server for the object to be updated
+    public var changedProperties:[String:String] {
+        
+        var changed:[String:String] = [:]
+        
+        for (name,value) in self.changedValues() {
+            if let attribute:NSAttributeDescription = self.attributes[name]  {
+                changed[attribute.jsonKey] = String(describing: value)
+            }
+        }
+        
+        return changed
+        
+    }
+    
+    /// Dictionary of the relations to be changed changed for this model keyed by their Json key. This is ready to be sent over to the
+    /// server for the object to be updated
+    public var changedOneRelation:[String:Dictionary<String,Array<ModelId>>] {
+        
+        var changed:[String:Dictionary<String,Array<ModelId>>] = [:]
+        
+        for (name,value) in self.changedValues() {
+            if let attribute:NSRelationshipDescription = self.oneRelations[name],
+                let jsonKey:String = attribute.jsonKey,
+                let model:ConnectModel = value as? ConnectModel  {
+                
+                if  changed[jsonKey] == nil  {
+                    changed[jsonKey] = Dictionary<String,Array<ModelId>>()
+                    changed[jsonKey]! ["add"] = Array<ModelId>()
+                    changed[jsonKey]! ["remove"] = Array<ModelId>()
+                }
+                changed[jsonKey]!["add"]!.append(model.primaryKeyValue )
+            }
+        }
+        
+        return changed
+        
+    }
+    
+    
     /// when creating a model object from json it can happen that instead of having the full dictionary with all values
     /// only the value for the primary key is available. hasData is true if data was pulled from API for this instance.
     public var hasData: Bool {
@@ -233,6 +274,7 @@ open class ConnectModel: NSManagedObject, Managed {
         return relation
         
     }
+    
     
     
     
@@ -292,6 +334,26 @@ open class ConnectModel: NSManagedObject, Managed {
                                                                             done(managedId, error)
             })
     }
+    
+    override open var description : String {
+        
+        if let title:String = ConnectModel.connect().presenterForClass(className: "\(type(of: self))" ).modelTitle(model: self) {
+            return title
+        }
+        
+        return "\(type(of: self)) \(self.primaryKeyValue)"
+    }
+    
+    override open var debugDescription : String {
+        return "\(type(of: self)) \(self.primaryKeyValue)"
+    }
+    
+    
+    
+    public static func connect() -> LaravelConnect {
+        return LaravelConnect.shared()
+    }
+    
     
     public static func get(modelId: ModelId, include:[String] = [], done:@escaping (NSManagedObjectID?, Error?) -> Void) -> LaravelTask {
         return LaravelConnect.shared().get(model:self, modelId: modelId, include:include, done: done)

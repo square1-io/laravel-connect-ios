@@ -8,11 +8,26 @@
 import UIKit
 import CoreData
 
-class ModelListTableViewController: UITableViewController, ModelListOptionsDelegate, UISearchBarDelegate {
+protocol ModelListTableViewDelegate {
     
+    func onItemsSelected(selected:Array<ConnectModel>, selectionMetaData:Any)
+    
+}
 
+class ModelListTableViewController: UITableViewController, ModelListOptionsDelegate, UISearchBarDelegate {
+
+    enum ListMode {
+        case Browse
+        case SingleSelect
+        case MultiSelect
+    }
+
+    public var mode:ListMode = .Browse
     public  var list: ModelList?
     private var presenter:ModelPresenter?
+    
+    public var selectionMetaData:Any?
+    public var modelListDelegate:ModelListTableViewDelegate?
     
     private var searchTerm:String!
     private var searchableAttributes:[String:NSAttributeDescription]!
@@ -49,7 +64,8 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
         
         if let name = self.list?.entity.name {
             self.presenter = LaravelConnect.shared().presenterForClass(className: name)
-            self.navigationItem.titleView = setTitle(title: name, subtitle: "                     ")
+            let action = self.mode == .Browse ? "" : "Select"
+            self.navigationItem.titleView = setTitle(title: "\(action) \(name)", subtitle: "                     ")
         }
         
        
@@ -60,6 +76,11 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
         control.addTarget(self,action: #selector(refreshList), for: UIControlEvents.valueChanged)
         
         self.refreshControl = control
+        
+        if(self.mode != .Browse) {
+            self.navigationItem.leftBarButtonItem = nil
+            self.navigationItem.rightBarButtonItem = nil
+        }
         
         self.loadNextPage()
     }
@@ -155,6 +176,22 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        switch self.mode {
+        case .SingleSelect:
+            if let delegate = self.modelListDelegate,
+                let currentItem:ConnectModel = self.list![indexPath.row] {
+                var selected = Array<ConnectModel>()
+                selected.append(currentItem)
+                delegate.onItemsSelected(selected: selected, selectionMetaData: selectionMetaData)
+                self.navigationController?.popViewController(animated: true)
+            }
+        //case .MultiSelect:
+        default:
+            return
+        }
+    }
 
     /*
     // Override to support conditional editing of the table view.
@@ -193,6 +230,10 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
 
     
     // MARK: - Navigation
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        return self.mode == .Browse
+    }
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

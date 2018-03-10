@@ -11,7 +11,7 @@ import LaravelConnect
 
 public class SampleAppConnectSettings: LaravelSettings {
 
-    public let apiHost: String = "connect-demo.mobile1.io"
+    public let apiHost: String = "connect-demo.mobile1.local" // "connect-demo.mobile1.io"
     public let cacheDisabled: Bool = true
     public let coreDataModelName = "laravel_connect"
     public let httpScheme: String = "http"

@@ -14,7 +14,7 @@ private let MANY_LABEL = "Many Relations"
 
 class ModelDetailsTableViewController: UITableViewController {
     
-    public var model:ConnectModel?
+    public var model:ConnectModel!
     public var modelId:Any?
     public var modelType:ConnectModel.Type?
     private var presenter:ModelPresenter?
@@ -81,6 +81,13 @@ class ModelDetailsTableViewController: UITableViewController {
         
         self.navigationItem.rightBarButtonItem = rightButtonItem
         
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.model.reloadFromContext()
+        self.setTitle()
+        self.tableView.reloadData()
     }
     
     @objc private func editButtonAction(sender:Any) {

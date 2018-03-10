@@ -9,7 +9,6 @@ import Foundation
 
 import Foundation
 import Square1CoreData
-import Square1Network
 import CoreData
 
 
@@ -20,11 +19,11 @@ public class LaravelPaginatedModelResponse: LaravelPaginatedResponse {
     
     private var items: Array<[String : AnyObject]>?
     
-    public required init(with dictionary: [String : AnyObject]) {
-       super.init(with: dictionary)
 
-       self.items = self.data["items"] as! Array<[String : AnyObject]>
-      
+    public required init(data: Data) throws {
+        try super.init(data: data)
+        
+        self.items = self.json["items"] as? Array<[String : AnyObject]>
     }
     
     
@@ -47,7 +46,7 @@ public class LaravelSingleObjectModelResponse: LaravelResponse {
     public override func storeModelObjects(coreData: CoreDataManager, model: ConnectModel.Type) throws {
         let context = coreData.newBackgroundContext()
         let decoder = try CoreDataDecoder(context:context, model:model)
-        let decodedModel = try decoder.decode(item: self.data, model: model, id: &self.id!)
+        let decodedModel = try decoder.decode(item: self.json, model: model, id: &self.id!)
         try context.save()
         self.managedId = decodedModel.objectID
         

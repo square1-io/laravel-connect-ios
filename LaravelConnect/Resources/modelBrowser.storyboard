@@ -91,7 +91,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bsG-OD-aEo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1215.2" y="-726.38680659670172"/>
+            <point key="canvasLocation" x="-1215" y="-1137"/>
         </scene>
         <!--Model List Options Table View Controller-->
         <scene sceneID="SNf-98-W3Y">
@@ -408,7 +408,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Etc-kc-DzI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-28" y="-741"/>
+            <point key="canvasLocation" x="-28" y="-622"/>
         </scene>
         <!--Model Details Edit Table View Controller-->
         <scene sceneID="IBw-La-Scp">
@@ -418,35 +418,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <textField key="tableFooterView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" id="ThF-Nt-ndf">
-                            <rect key="frame" x="0.0" y="343" width="375" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <nil key="textColor"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <textInputTraits key="textInputTraits"/>
-                        </textField>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="EditStringAttributeTableViewCell" rowHeight="228" id="adD-Pz-HDz" customClass="EditStringAttributeTableViewCell" customModule="LaravelConnect" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="228"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="EditStringAttributeTableViewCell" rowHeight="164" id="adD-Pz-HDz" customClass="EditStringAttributeTableViewCell" customModule="LaravelConnect" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="164"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="adD-Pz-HDz" id="un2-IX-BUN">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="227.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="163.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="onJ-E7-0hQ">
                                             <rect key="frame" x="10" y="10" width="355" height="30"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="30" id="BRf-A4-hx7"/>
+                                                <constraint firstAttribute="height" constant="30" id="zf3-e3-vlm"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="rdP-Hh-ZEc">
-                                            <rect key="frame" x="10" y="50" width="355" height="164"/>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <rect key="frame" x="10" y="50" width="355" height="99"/>
+                                            <color key="backgroundColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="164" id="S6n-6y-ec1"/>
+                                                <constraint firstAttribute="height" constant="99" id="127-oA-p1j"/>
                                             </constraints>
                                             <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -457,13 +450,13 @@
                                         </textView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="rdP-Hh-ZEc" secondAttribute="bottom" constant="13.5" id="87V-gG-w1o"/>
-                                        <constraint firstAttribute="trailing" secondItem="rdP-Hh-ZEc" secondAttribute="trailing" constant="10" id="KDW-EB-Osv"/>
-                                        <constraint firstItem="rdP-Hh-ZEc" firstAttribute="leading" secondItem="un2-IX-BUN" secondAttribute="leading" constant="10" id="T6R-lN-6s6"/>
-                                        <constraint firstItem="onJ-E7-0hQ" firstAttribute="leading" secondItem="un2-IX-BUN" secondAttribute="leading" constant="10" id="f8h-f2-dFR"/>
-                                        <constraint firstItem="rdP-Hh-ZEc" firstAttribute="top" secondItem="onJ-E7-0hQ" secondAttribute="bottom" constant="10" id="gB4-W1-qis"/>
-                                        <constraint firstAttribute="trailing" secondItem="onJ-E7-0hQ" secondAttribute="trailing" constant="10" id="orr-8F-FxP"/>
-                                        <constraint firstItem="onJ-E7-0hQ" firstAttribute="top" secondItem="un2-IX-BUN" secondAttribute="top" constant="10" id="tQU-zl-cky"/>
+                                        <constraint firstItem="onJ-E7-0hQ" firstAttribute="leading" secondItem="un2-IX-BUN" secondAttribute="leading" constant="10" id="7SA-pu-abz"/>
+                                        <constraint firstItem="rdP-Hh-ZEc" firstAttribute="leading" secondItem="un2-IX-BUN" secondAttribute="leading" constant="10" id="A3X-wb-NUP"/>
+                                        <constraint firstItem="onJ-E7-0hQ" firstAttribute="top" secondItem="un2-IX-BUN" secondAttribute="top" constant="10" id="LCS-8x-b56"/>
+                                        <constraint firstAttribute="trailing" secondItem="rdP-Hh-ZEc" secondAttribute="trailing" constant="10" id="e1S-M9-KzX"/>
+                                        <constraint firstItem="rdP-Hh-ZEc" firstAttribute="top" secondItem="onJ-E7-0hQ" secondAttribute="bottom" constant="10" id="fN0-3J-Zu0"/>
+                                        <constraint firstAttribute="bottom" secondItem="rdP-Hh-ZEc" secondAttribute="bottom" constant="14.5" id="tjz-k5-G5J"/>
+                                        <constraint firstAttribute="trailing" secondItem="onJ-E7-0hQ" secondAttribute="trailing" constant="10" id="vWu-dW-znL"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
@@ -471,8 +464,8 @@
                                     <outlet property="textView" destination="rdP-Hh-ZEc" id="1GK-yS-ka9"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="EditNumberAttributeTableViewCell" rowHeight="87" id="axL-7s-KjF" customClass="EditNumberAttributeTableViewCell" customModule="LaravelConnect" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="256" width="375" height="87"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="EditNumberAttributeTableViewCell" rowHeight="87" id="axL-7s-KjF" customClass="EditNumberAttributeTableViewCell" customModule="LaravelConnect" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="192" width="375" height="87"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="axL-7s-KjF" id="mB1-Wb-dXJ">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="86.5"/>
@@ -491,7 +484,7 @@
                                             <rect key="frame" x="10" y="42" width="349" height="30"/>
                                             <nil key="textColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <textInputTraits key="textInputTraits" keyboardType="numbersAndPunctuation" returnKeyType="done"/>
+                                            <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done"/>
                                         </textField>
                                     </subviews>
                                     <constraints>
@@ -507,6 +500,48 @@
                                 <connections>
                                     <outlet property="labelName" destination="rhB-gC-TIO" id="ESo-zf-fIW"/>
                                     <outlet property="textView" destination="bQi-zk-3I3" id="pZO-k0-hHQ"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="EditOneRelationTableViewCell" rowHeight="87" id="b7E-oX-zzj" customClass="EditOneRelationTableViewCell" customModule="LaravelConnect" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="279" width="375" height="87"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="b7E-oX-zzj" id="m9o-Gm-dkJ">
+                                    <rect key="frame" x="0.0" y="0.0" width="341" height="86.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jwE-6a-Kbw">
+                                            <rect key="frame" x="10" y="10" width="321" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="30" id="tEw-nW-Q6d"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HCf-mW-9HE">
+                                            <rect key="frame" x="10" y="48" width="315" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="dBW-Yj-DhY"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="jwE-6a-Kbw" firstAttribute="leading" secondItem="m9o-Gm-dkJ" secondAttribute="leading" constant="10" id="0GQ-O3-FHh"/>
+                                        <constraint firstItem="jwE-6a-Kbw" firstAttribute="top" secondItem="m9o-Gm-dkJ" secondAttribute="top" constant="10" id="B70-5w-Tyf"/>
+                                        <constraint firstItem="HCf-mW-9HE" firstAttribute="leading" secondItem="m9o-Gm-dkJ" secondAttribute="leading" constant="10" id="OSn-wP-9pK"/>
+                                        <constraint firstAttribute="bottom" secondItem="HCf-mW-9HE" secondAttribute="bottom" constant="17.5" id="OZQ-nM-qEY"/>
+                                        <constraint firstAttribute="trailing" secondItem="jwE-6a-Kbw" secondAttribute="trailing" constant="10" id="SfK-hd-FP0"/>
+                                        <constraint firstItem="HCf-mW-9HE" firstAttribute="top" secondItem="jwE-6a-Kbw" secondAttribute="bottom" constant="8" id="Wco-2p-BdC"/>
+                                        <constraint firstAttribute="trailing" secondItem="HCf-mW-9HE" secondAttribute="trailing" constant="16" id="xmM-Ef-fbE"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="labelName" destination="jwE-6a-Kbw" id="iCk-ip-vVW"/>
+                                    <outlet property="labelValue" destination="HCf-mW-9HE" id="04u-zo-6ju"/>
+                                    <segue destination="gyO-Zc-7Ka" kind="show" identifier="SelectSingleSegue" id="WGE-H6-cOv"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -530,7 +565,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fk5-xN-CL6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2032.8" y="-743.47826086956525"/>
+            <point key="canvasLocation" x="2012" y="-1311"/>
         </scene>
         <!--Model Navigation Controller-->
         <scene sceneID="vHh-3q-1wN">
@@ -582,10 +617,10 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ogd-03-9Ql" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1080" y="-742.12893553223398"/>
+            <point key="canvasLocation" x="1065" y="-622"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="vX3-BM-5ez"/>
+        <segue reference="WGE-H6-cOv"/>
     </inferredMetricsTieBreakers>
 </document>

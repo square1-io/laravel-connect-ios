@@ -41,6 +41,6 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
    s.dependency  'Sync', '~> 4.0'
    s.dependency "Square1CoreData", "~> 1.0.2"
-   s.dependency "Square1Network", "~> 1.0.0"
+  #s.dependency "Square1Network", "~> 1.0.0"
    s.dependency "Square1Tools", "~> 1.0.0"
 end

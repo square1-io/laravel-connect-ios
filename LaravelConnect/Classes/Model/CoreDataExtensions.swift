@@ -118,21 +118,6 @@ extension NSManagedObjectContext {
     
 }
 
-extension Data {
-    
-    public func toJSON() -> Dictionary<String,AnyObject>  {
-        do{
-            let json: Dictionary<String,AnyObject> = try JSONSerialization.jsonObject(with: self, options: .allowFragments) as! Dictionary
-            return json
-        } catch let error as NSError {
-#if DEBUG
-    print(error)
-#endif
-        return Dictionary()
-        }
-    }
-    
-}
 
 
 
