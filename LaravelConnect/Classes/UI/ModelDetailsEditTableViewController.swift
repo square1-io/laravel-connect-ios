@@ -120,6 +120,12 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
                 let field = EditHelper(name: name, cellReusableId:"EditOneRelationTableViewCell", initialValue: re.object(), newValue: re.object())
                 self.editableFields[name] = field
             }
+            
+            if let re:ConnectManyRelationProtocol = relation as? ConnectManyRelationProtocol {
+                self.editableFieldsName.append(name)
+                let field = EditHelper(name: name, cellReusableId:"EditManyRelationTableViewCell", initialValue:re, newValue:re)
+                self.editableFields[name] = field
+            }
 
         }
 
@@ -258,6 +264,17 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
                 controller.list = relation.relatedType.list()
             }
         }
+        else if ("SelectManySegue".elementsEqual(segueIdentifier)) {
+            
+            if let controller:EditManyRelationNavigationController = segue.destination as? EditManyRelationNavigationController, let relation:ConnectManyRelationProtocol = self.model.connectRelations[name] as? ConnectManyRelationProtocol {
+                controller.relation = relation
+                controller.modelListDelegate = self
+                if let field = self.editableFields[name] {
+                    controller.selectionMetaData = field
+                }
+            }
+        }
+       
 
         //OneRelationSegue
         

@@ -7,15 +7,16 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--List-->
+        <!--Model List Controller-->
         <scene sceneID="ZMj-3f-eMA">
             <objects>
-                <tableViewController id="gyO-Zc-7Ka" customClass="ModelListTableViewController" customModule="LaravelConnect" sceneMemberID="viewController">
+                <tableViewController id="gyO-Zc-7Ka" userLabel="Model List Controller" customClass="ModelListTableViewController" customModule="LaravelConnect" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="AUb-r5-KN5">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <searchBar key="tableHeaderView" contentMode="redraw" id="D1E-ca-TFL">
@@ -98,7 +99,7 @@
             <objects>
                 <tableViewController id="ZPB-MU-2zF" customClass="ModelListOptionsTableViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="alL-Vt-PxR">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -235,7 +236,7 @@
             <objects>
                 <tableViewController id="3VE-MS-d5c" customClass="ModelDetailsTableViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="lee-Zi-v1R">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -294,7 +295,7 @@
                                 <rect key="frame" x="0.0" y="118" width="375" height="90"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cQw-fB-eY4" id="i5b-nG-XDz">
-                                    <rect key="frame" x="0.0" y="0.0" width="341" height="89.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="89.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attribute Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sxP-0D-Lwu">
@@ -346,7 +347,7 @@
                                 <rect key="frame" x="0.0" y="208" width="375" height="90"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="5kg-c4-LC8" id="wss-nj-z1S">
-                                    <rect key="frame" x="0.0" y="0.0" width="341" height="89.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="89.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attribute Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M3N-bq-F8E">
@@ -415,7 +416,7 @@
             <objects>
                 <tableViewController id="82F-F1-Zin" customClass="ModelDetailsEditTableViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="rUQ-mq-aYQ">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -506,7 +507,7 @@
                                 <rect key="frame" x="0.0" y="279" width="375" height="87"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="b7E-oX-zzj" id="m9o-Gm-dkJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="341" height="86.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="86.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jwE-6a-Kbw">
@@ -544,6 +545,48 @@
                                     <segue destination="gyO-Zc-7Ka" kind="show" identifier="SelectSingleSegue" id="WGE-H6-cOv"/>
                                 </connections>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="EditManyRelationTableViewCell" rowHeight="87" id="gqb-3I-CAb" customClass="EditManyRelationTableViewCell" customModule="LaravelConnect" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="366" width="375" height="87"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gqb-3I-CAb" id="1bc-ue-ARK">
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="86.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Many Relation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="USs-Xw-DTk">
+                                            <rect key="frame" x="10" y="10" width="321" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="30" id="xvi-uA-XiQ"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="auB-Vd-Kbe">
+                                            <rect key="frame" x="10" y="48" width="315" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="DqX-de-l6g"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="USs-Xw-DTk" firstAttribute="leading" secondItem="1bc-ue-ARK" secondAttribute="leading" constant="10" id="8bg-xA-Rgt"/>
+                                        <constraint firstAttribute="trailing" secondItem="auB-Vd-Kbe" secondAttribute="trailing" constant="16" id="Fdl-Fb-QI9"/>
+                                        <constraint firstItem="auB-Vd-Kbe" firstAttribute="leading" secondItem="1bc-ue-ARK" secondAttribute="leading" constant="10" id="PVb-vq-pvo"/>
+                                        <constraint firstItem="auB-Vd-Kbe" firstAttribute="top" secondItem="USs-Xw-DTk" secondAttribute="bottom" constant="8" id="cIr-M2-oph"/>
+                                        <constraint firstAttribute="bottom" secondItem="auB-Vd-Kbe" secondAttribute="bottom" constant="17.5" id="jgM-f6-vL6"/>
+                                        <constraint firstAttribute="trailing" secondItem="USs-Xw-DTk" secondAttribute="trailing" constant="10" id="q7h-TF-LDn"/>
+                                        <constraint firstItem="USs-Xw-DTk" firstAttribute="top" secondItem="1bc-ue-ARK" secondAttribute="top" constant="10" id="tpV-cG-4kt"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="labelName" destination="USs-Xw-DTk" id="NLc-OS-C6U"/>
+                                    <outlet property="labelValue" destination="auB-Vd-Kbe" id="vuB-VT-H2Y"/>
+                                    <segue destination="Amq-nr-zU5" kind="presentation" identifier="SelectManySegue" id="7jk-bP-poE"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="82F-F1-Zin" id="q4k-Mu-WJr"/>
@@ -567,6 +610,112 @@
             </objects>
             <point key="canvasLocation" x="2012" y="-1311"/>
         </scene>
+        <!--Remove-->
+        <scene sceneID="IR3-Wa-wHQ">
+            <objects>
+                <viewController id="Odq-lr-XBq" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="DtG-Sv-udw">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1TV-kK-uXu">
+                                <rect key="frame" x="0.0" y="44" width="375" height="69"/>
+                                <connections>
+                                    <segue destination="gyO-Zc-7Ka" kind="embed" id="NaY-sJ-EBz"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="1TV-kK-uXu" firstAttribute="bottom" secondItem="PmC-D0-mSx" secondAttribute="bottom" id="GIR-Mc-z4L"/>
+                            <constraint firstItem="1TV-kK-uXu" firstAttribute="top" secondItem="PmC-D0-mSx" secondAttribute="top" id="hFA-Pb-UyZ"/>
+                            <constraint firstItem="1TV-kK-uXu" firstAttribute="trailing" secondItem="PmC-D0-mSx" secondAttribute="trailing" id="tqe-8m-hS5"/>
+                            <constraint firstItem="1TV-kK-uXu" firstAttribute="leading" secondItem="PmC-D0-mSx" secondAttribute="leading" id="zLL-JV-3BQ"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="PmC-D0-mSx"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Remove" id="f9e-81-kmw"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0dm-z1-yJY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4681" y="-828"/>
+        </scene>
+        <!--Edit Many Relation Navigation Controller-->
+        <scene sceneID="sTX-4J-9JB">
+            <objects>
+                <navigationController id="Amq-nr-zU5" customClass="EditManyRelationNavigationController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="8fa-WZ-zdc">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="mWE-OQ-f1j" kind="relationship" relationship="rootViewController" id="fG7-vs-E26"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IDA-yX-2jy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2834" y="-1311"/>
+        </scene>
+        <!--Add -->
+        <scene sceneID="tKV-Ku-u42">
+            <objects>
+                <viewController id="Zwk-Pq-UJp" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PRT-bv-np9">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FW9-I6-zMe">
+                                <rect key="frame" x="0.0" y="-235" width="375" height="69"/>
+                                <connections>
+                                    <segue destination="gyO-Zc-7Ka" kind="embed" id="5CY-56-HAK"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="FW9-I6-zMe" firstAttribute="bottom" secondItem="6NC-0O-X84" secondAttribute="bottom" id="AR3-UU-FNu"/>
+                            <constraint firstItem="FW9-I6-zMe" firstAttribute="trailing" secondItem="6NC-0O-X84" secondAttribute="trailing" id="bLl-od-RVu"/>
+                            <constraint firstItem="FW9-I6-zMe" firstAttribute="top" secondItem="6NC-0O-X84" secondAttribute="top" id="q2E-5x-clJ"/>
+                            <constraint firstItem="FW9-I6-zMe" firstAttribute="leading" secondItem="6NC-0O-X84" secondAttribute="leading" id="yFX-XN-rTL"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6NC-0O-X84"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Add " id="Y3a-8X-msD"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="57g-T5-eAC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4680.8000000000002" y="-1775.2623688155923"/>
+        </scene>
+        <!--Edit Many Relation View Controller-->
+        <scene sceneID="A9k-U2-RZJ">
+            <objects>
+                <tabBarController id="mWE-OQ-f1j" customClass="EditManyRelationViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="lab-V6-WHt">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Mca-s1-3oj">
+                            <connections>
+                                <action selector="cancelWithSender:" destination="mWE-OQ-f1j" id="mOE-PG-oup"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="wD7-eL-lHZ">
+                            <connections>
+                                <action selector="saveWithSender:" destination="mWE-OQ-f1j" id="GNS-Fa-KcY"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <tabBar key="tabBar" opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="klA-2I-8zb">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="Zwk-Pq-UJp" kind="relationship" relationship="viewControllers" id="adq-5T-5Yr"/>
+                        <segue destination="Odq-lr-XBq" kind="relationship" relationship="viewControllers" id="Uj8-qZ-ZHq"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="faf-dY-0FK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3646" y="-1311"/>
+        </scene>
         <!--Model Navigation Controller-->
         <scene sceneID="vHh-3q-1wN">
             <objects>
@@ -589,7 +738,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="rfi-Ed-q08" customClass="ModelOptionsNavigationController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="J7Y-4u-u8x">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -607,7 +756,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="UoS-MN-ypF" customClass="ModelDetailsEditNavigationController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7LF-VB-gyl">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -616,11 +765,23 @@
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ogd-03-9Ql" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <navigationItem id="u0b-0Z-X6i">
+                    <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Mwe-dP-V7a">
+                        <connections>
+                            <action selector="cancelWithSender:" destination="ZPB-MU-2zF" id="VLG-Th-xxw"/>
+                        </connections>
+                    </barButtonItem>
+                    <barButtonItem key="rightBarButtonItem" systemItem="save" id="5uh-EV-i03">
+                        <connections>
+                            <action selector="saveWithSender:" destination="ZPB-MU-2zF" id="gpr-xu-Nab"/>
+                        </connections>
+                    </barButtonItem>
+                </navigationItem>
             </objects>
             <point key="canvasLocation" x="1065" y="-622"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="WGE-H6-cOv"/>
+        <segue reference="5CY-56-HAK"/>
     </inferredMetricsTieBreakers>
 </document>

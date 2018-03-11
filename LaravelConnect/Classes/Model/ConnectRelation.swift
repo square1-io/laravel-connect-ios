@@ -198,6 +198,7 @@ open class ConnectOneRelation<T> : ConnectRelation<T>, ConnectOneRelationProtoco
 public protocol ConnectManyRelationProtocol : ConnectRelationProtocol {
     
     func list() -> ModelList
+    func localList() -> NSSet
     func list(filter: Filter , include:[String] ) -> ModelList
 }
 
@@ -211,6 +212,10 @@ public class ConnectManyRelation<T: ConnectModel> : ConnectRelation<T>, ConnectM
         self.set = parent.mutableSetValue(forKey: self.name)
     }
     
+    public func localList() -> NSSet {
+        return self.set
+    }
+    
     public func list() -> ModelList {
         
         return LaravelConnect.shared()
@@ -221,5 +226,12 @@ public class ConnectManyRelation<T: ConnectModel> : ConnectRelation<T>, ConnectM
         return LaravelConnect.shared().list(model:self.parentType, relation:self, filter:filter, include:include)
     }
     
+    open var description : String {
+        return "\((self.name)) \(self.relatedType)"
+    }
+    
+     open var debugDescription : String {
+        return "\(self.name) \(self.relatedType)"
+    }
 
 }
