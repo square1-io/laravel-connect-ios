@@ -123,14 +123,13 @@ class LaravelConnectClient {
             request.addPathSegment(segment: String(describing: model.primaryKeyValue))
         }
         
-        let attributes = model.attributes
-        
+          
         for (jsonKey,value) in model.changedProperties {
             request.addPostParam(name: jsonKey, value: value)
         }
 
-        request.addPostParamDictionary(name: "relations", values: model.changedOneRelation)
-        print(model.changedOneRelation)
+        request.addPostParamDictionary(name: "relations", values: model.changedRelations)
+      
       
         return request
     }

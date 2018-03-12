@@ -73,10 +73,13 @@ open class ConnectModel: NSManagedObject, Managed {
         
     }
     
+
     private var nonEditableFields:Array<String>!
+    private var removedFromRelation:Dictionary<String,Set<ConnectModel>>!
     
     private func initialize(){
         
+        self.removedFromRelation = Dictionary<String,Set<ConnectModel>>();
         self.nonEditableFields = Array()
         
         self.nonEditableFields.append("hasData")
@@ -98,6 +101,27 @@ open class ConnectModel: NSManagedObject, Managed {
         }
         
         self.jsonKeyToProperty = map
+    }
+    
+    public func removeFromManyRelation(relationName:String, model:ConnectModel){
+        
+        if self.removedFromRelation[relationName] == nil {
+           self.removedFromRelation[relationName] = Set()
+        }
+        if let set = self.removedFromRelation[relationName] {
+            self.removedFromRelation[relationName] = set.union(set)
+        }
+       
+    }
+    
+    public func removeFromManyRelation(relationName:String, from array:Array<ConnectModel>){
+        
+        if self.removedFromRelation[relationName] == nil {
+            self.removedFromRelation[relationName] = Set()
+        }
+        if let oldSet = self.removedFromRelation[relationName] {
+          self.removedFromRelation[relationName] = oldSet.union(Set(array))
+        }
     }
     
     // stores properties for this entities in a dictionay keyed with the name of the
@@ -195,24 +219,61 @@ open class ConnectModel: NSManagedObject, Managed {
         
     }
     
+    override open func didSave(){
+        super.didSave()
+        self.removedFromRelation.removeAll()
+    }
+    
     /// Dictionary of the relations to be changed changed for this model keyed by their Json key. This is ready to be sent over to the
     /// server for the object to be updated
-    public var changedOneRelation:[String:Dictionary<String,Array<ModelId>>] {
+    public var changedRelations:[String:Dictionary<String,Array<ModelId>>] {
         
         var changed:[String:Dictionary<String,Array<ModelId>>] = [:]
         
         for (name,value) in self.changedValues() {
-            if let attribute:NSRelationshipDescription = self.oneRelations[name],
-                let jsonKey:String = attribute.jsonKey,
-                let model:ConnectModel = value as? ConnectModel  {
+            
+            if let attribute:NSRelationshipDescription = self.entity.relationshipsByName[name] {
+               
+                let jsonKey:String = attribute.jsonKey
                 
                 if  changed[jsonKey] == nil  {
                     changed[jsonKey] = Dictionary<String,Array<ModelId>>()
                     changed[jsonKey]! ["add"] = Array<ModelId>()
                     changed[jsonKey]! ["remove"] = Array<ModelId>()
                 }
-                changed[jsonKey]!["add"]!.append(model.primaryKeyValue )
+                
+                if let model:ConnectModel = value as? ConnectModel  {
+                    changed[jsonKey]!["add"]!.append(model.primaryKeyValue)
+                }
+                else if let changedRelation:Set<ConnectModel> = value as? Set<ConnectModel> {
+                    for m in changedRelation {
+                        changed[jsonKey]!["add"]!.append((m as! ConnectModel) .primaryKeyValue)
+                    }
+                }
+                
             }
+        }
+        
+        for (name,value) in self.removedFromRelation {
+            
+            if let attribute:NSRelationshipDescription = self.entity.relationshipsByName[name] {
+                
+                let jsonKey:String = attribute.jsonKey
+                
+                if  changed[jsonKey] == nil  {
+                    changed[jsonKey] = Dictionary<String,Array<ModelId>>()
+                    changed[jsonKey]! ["add"] = Array<ModelId>()
+                    changed[jsonKey]! ["remove"] = Array<ModelId>()
+                }
+                
+                if let changedRelation:Set<ConnectModel> = value as? Set<ConnectModel> {
+                    for m in changedRelation {
+                        changed[jsonKey]!["remove"]!.append((m as! ConnectModel) .primaryKeyValue)
+                    }
+                }
+                
+            }
+            
         }
         
         return changed

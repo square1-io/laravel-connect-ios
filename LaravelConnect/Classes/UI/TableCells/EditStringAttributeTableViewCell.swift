@@ -27,7 +27,7 @@ class EditStringAttributeTableViewCell: BaseEditTableViewCell, UITextViewDelegat
         notifyUpdate()
     }
     
-    override func setEditableField(editable: EditHelper) {
+    override func setEditableField(editable: EditHelperProtocol) {
         super.setEditableField(editable: editable)
         self.labelName.text = editable.name
         self.textView.text = String(describing:editable.value())

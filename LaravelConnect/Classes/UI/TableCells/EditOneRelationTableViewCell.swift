@@ -28,7 +28,7 @@ class EditOneRelationTableViewCell: BaseEditTableViewCell {
         notifyUpdate()
     }
     
-    override func setEditableField(editable: EditHelper) {
+    override func setEditableField(editable: EditHelperProtocol) {
         super.setEditableField(editable: editable)
         self.labelName.text = editable.name
         self.labelValue.text = String(describing:editable.value())

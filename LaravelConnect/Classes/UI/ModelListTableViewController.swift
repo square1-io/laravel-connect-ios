@@ -25,6 +25,8 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
     public var mode:ListMode = .Browse
     public  var list: ModelList?
     private var presenter:ModelPresenter?
+    public var selectedItems:Set<ConnectModel>!
+    
     
     public var selectionMetaData:Any?
     public var modelListDelegate:ModelListTableViewDelegate?
@@ -47,6 +49,7 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.selectedItems = Set()
         self.searchTerm = ""
         self.searchableAttributes = Dictionary()
         self.selectedSearchableAttributes = Dictionary()
@@ -172,27 +175,50 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
             let c:ModelSummaryTableViewCell = cell as? ModelSummaryTableViewCell{
             c.labelMain.text = self.presenter?.modelTitle(model: currentItem)
             c.labelSubText.text = self.presenter?.modelSubtitle(model:currentItem)
+            
+            if(self.selectedItems.contains(currentItem)){
+                c.accessoryType = .checkmark
+            }else {
+                c.accessoryType = .none
+            }
         }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        guard let currentItem:ConnectModel = self.list![indexPath.row] else { return}
+        
         switch self.mode {
         case .SingleSelect:
-            if let delegate = self.modelListDelegate,
-                let currentItem:ConnectModel = self.list![indexPath.row] {
+            if let delegate = self.modelListDelegate{
                 var selected = Array<ConnectModel>()
                 selected.append(currentItem)
                 delegate.onItemsSelected(selected: selected, selectionMetaData: selectionMetaData)
                 self.navigationController?.popViewController(animated: true)
             }
-        //case .MultiSelect:
+            break
+        case .MultiSelect:
+            if(self.selectedItems.contains(currentItem)){
+                self.selectedItems.remove(currentItem)
+            }else {
+                self.selectedItems.insert(currentItem)
+            }
+             self.tableView.reloadData()
+             self.modelListDelegate?.onItemsSelected(selected: Array(self.selectedItems), selectionMetaData: selectionMetaData)
+            break;
         default:
             return
         }
     }
 
+//    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+//        guard let currentItem:ConnectModel = self.list![indexPath.row] else { return}
+//        self.selectedItems.remove(currentItem)
+//        self.modelListDelegate?.onItemsSelected(selected: Array(self.selectedItems), selectionMetaData: selectionMetaData)
+//
+//    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

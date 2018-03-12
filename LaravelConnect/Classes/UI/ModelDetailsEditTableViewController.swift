@@ -8,8 +8,18 @@
 import UIKit
 import CoreData
 
-
-struct EditHelper {
+protocol EditHelperProtocol {
+    
+    var name:String {get }
+    var cellReusableId:String {get }
+    var initialValue:Any? {get }
+    var newValue:Any? {get set}
+    
+    func updated() -> Bool
+    func value() -> Any
+    
+}
+struct EditHelper: EditHelperProtocol {
     
     let name:String
     let cellReusableId:String
@@ -38,12 +48,49 @@ struct EditHelper {
  
 }
 
+struct ManyEditHelper : EditHelperProtocol {
+   
+    func value() -> Any {
+        var val = Dictionary<String,Array<ConnectModel>>()
+        if let add:Array = self.add, add.count > 0 {
+            val["add"] = add
+        }
+        if let remove:Array = self.remove, remove.count > 0 {
+            val["remove"] = remove
+        }
+        return val
+    }
+    
+    
+    
+    let name:String
+    let cellReusableId:String
+    let initialValue:Any?
+    var newValue:Any?
+    
+    var add:Array<ConnectModel>?
+    var remove:Array<ConnectModel>?
+
+    func updated() -> Bool {
+        
+        if let a = self.add, a.count > 0 {
+            return true
+        }
+        
+        if let r = self.remove, r.count > 0 {
+            return true
+        }
+ 
+        return false
+    }
+}
+
 class BaseEditTableViewCell: UITableViewCell {
     
     weak var controller:ModelDetailsEditTableViewController?
-    var field:EditHelper!
+    var field:EditHelperProtocol!
     
-    public func setEditableField(editable:EditHelper){
+    public func setEditableField(editable:EditHelperProtocol){
         self.field = editable
     }
     
@@ -75,7 +122,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
     public var model:ConnectModel!
     private var presenter:ModelPresenter!
     
-    private var editableFields:[String:EditHelper]!
+    private var editableFields:[String:EditHelperProtocol]!
     private var editableFieldsName:[String]!
     
     override func viewDidLoad() {
@@ -123,7 +170,8 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
             
             if let re:ConnectManyRelationProtocol = relation as? ConnectManyRelationProtocol {
                 self.editableFieldsName.append(name)
-                let field = EditHelper(name: name, cellReusableId:"EditManyRelationTableViewCell", initialValue:re, newValue:re)
+                
+                let field = ManyEditHelper(name: name, cellReusableId:"EditManyRelationTableViewCell", initialValue:"", newValue:"Edit Relation", add: nil, remove: nil)
                 self.editableFields[name] = field
             }
 
@@ -152,8 +200,17 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
             
             if(field.updated() == true ) {
                 updated = true
-                print( "updated \(field.name) to \(field.value())")
-                self.model.setValue(field.value(), forKey: field.name)
+                
+                if let paramHelper:EditHelper = field as? EditHelper {
+                    print( "updated param to \(paramHelper.name) to \(paramHelper.value())")
+                    self.model.setValue(paramHelper.value(), forKey: paramHelper.name)
+                }
+                else if let paramHelper:ManyEditHelper = field as? ManyEditHelper {
+                    print( "updated relation  \(paramHelper.name) to \(paramHelper.value())")
+                    if let connectManyrelation:ConnectManyRelationProtocol = self.model.connectRelations[paramHelper.name] as? ConnectManyRelationProtocol{
+                        connectManyrelation.updateRelation(add: paramHelper.add, remove: paramHelper.remove)
+                    }
+                }
             }
             
         }
@@ -203,7 +260,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
         
     }
     
-    public func onFieldChanged(field:EditHelper) {
+    public func onFieldChanged(field:EditHelperProtocol) {
         self.editableFields[field.name] = field
     }
     
@@ -245,6 +302,10 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
            self.tableView.reloadData()
         }
         
+        if var field:ManyEditHelper = selectionMetaData as? ManyEditHelper {
+            self.editableFields[field.name] = field
+            self.tableView.reloadData()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -252,15 +313,14 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
         let indexPath = self.tableView.indexPathForSelectedRow
         let name:String = self.editableFieldsName[(indexPath?.row)!]
         let segueIdentifier:String = segue.identifier != nil ? segue.identifier! : ""
+        let field = self.editableFields[name]
         
         if ("SelectSingleSegue".elementsEqual(segueIdentifier)) {
             
             if let controller:ModelListTableViewController = segue.destination as? ModelListTableViewController, let relation:ConnectOneRelationProtocol = self.model.connectRelations[name] as? ConnectOneRelationProtocol {
                 controller.mode = .SingleSelect
                 controller.modelListDelegate = self
-                if let field = self.editableFields[name] {
-                    controller.selectionMetaData = field
-                }
+                controller.selectionMetaData = field
                 controller.list = relation.relatedType.list()
             }
         }
@@ -269,9 +329,8 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
             if let controller:EditManyRelationNavigationController = segue.destination as? EditManyRelationNavigationController, let relation:ConnectManyRelationProtocol = self.model.connectRelations[name] as? ConnectManyRelationProtocol {
                 controller.relation = relation
                 controller.modelListDelegate = self
-                if let field = self.editableFields[name] {
-                    controller.selectionMetaData = field
-                }
+                controller.selectionMetaData = field
+                
             }
         }
        

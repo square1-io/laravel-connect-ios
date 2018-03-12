@@ -16,7 +16,7 @@
             <objects>
                 <tableViewController id="gyO-Zc-7Ka" userLabel="Model List Controller" customClass="ModelListTableViewController" customModule="LaravelConnect" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="AUb-r5-KN5">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <searchBar key="tableHeaderView" contentMode="redraw" id="D1E-ca-TFL">
@@ -99,7 +99,7 @@
             <objects>
                 <tableViewController id="ZPB-MU-2zF" customClass="ModelListOptionsTableViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="alL-Vt-PxR">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -111,7 +111,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="rGb-f6-A8x">
-                                            <rect key="frame" x="16" y="183" width="343" height="29"/>
+                                            <rect key="frame" x="8" y="183" width="359" height="29"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="28" id="gEZ-ic-Vpk"/>
                                             </constraints>
@@ -121,7 +121,7 @@
                                             </segments>
                                         </segmentedControl>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Order By:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zjb-cb-2Zy">
-                                            <rect key="frame" x="16" y="11" width="343" height="21"/>
+                                            <rect key="frame" x="8" y="11" width="359" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="5d3-5O-yqu"/>
                                             </constraints>
@@ -130,7 +130,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sort Order:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AEJ-62-qDs">
-                                            <rect key="frame" x="16" y="152" width="343" height="21"/>
+                                            <rect key="frame" x="8" y="152" width="359" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="N8X-l1-ROT"/>
                                             </constraints>
@@ -174,13 +174,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vJS-AW-IXL">
-                                            <rect key="frame" x="26" y="10" width="278" height="28"/>
+                                            <rect key="frame" x="18" y="10" width="294" height="28"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EzB-Yv-e5h">
-                                            <rect key="frame" x="302" y="9" width="49" height="31"/>
+                                            <rect key="frame" x="310" y="9" width="49" height="31"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="47" id="IlE-Fn-zL7"/>
                                                 <constraint firstAttribute="height" constant="31" id="V0q-Bx-e9S"/>
@@ -236,7 +236,7 @@
             <objects>
                 <tableViewController id="3VE-MS-d5c" customClass="ModelDetailsTableViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="lee-Zi-v1R">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -248,7 +248,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attribute Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vHI-yV-MUb">
-                                            <rect key="frame" x="16" y="11" width="343" height="21"/>
+                                            <rect key="frame" x="8" y="11" width="359" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="VG3-kf-4HU"/>
                                             </constraints>
@@ -257,7 +257,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OjU-rZ-aIp">
-                                            <rect key="frame" x="16" y="32" width="343" height="21"/>
+                                            <rect key="frame" x="8" y="32" width="359" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="GLX-CQ-0Yx"/>
                                             </constraints>
@@ -266,7 +266,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Value" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xvn-VR-UPn">
-                                            <rect key="frame" x="16" y="53" width="343" height="26"/>
+                                            <rect key="frame" x="8" y="53" width="359" height="26"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -299,7 +299,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attribute Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sxP-0D-Lwu">
-                                            <rect key="frame" x="16" y="11" width="317" height="21"/>
+                                            <rect key="frame" x="8" y="11" width="326" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="b9v-o9-z9b"/>
                                             </constraints>
@@ -308,7 +308,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0rF-Za-Da1">
-                                            <rect key="frame" x="16" y="32" width="317" height="21"/>
+                                            <rect key="frame" x="8" y="32" width="326" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="jcM-mL-btd"/>
                                             </constraints>
@@ -317,7 +317,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Value" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bCG-Ha-p93">
-                                            <rect key="frame" x="16" y="53" width="317" height="26"/>
+                                            <rect key="frame" x="8" y="53" width="326" height="26"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -351,7 +351,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Attribute Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M3N-bq-F8E">
-                                            <rect key="frame" x="16" y="11" width="317" height="21"/>
+                                            <rect key="frame" x="8" y="11" width="326" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="FVM-pe-EqD"/>
                                             </constraints>
@@ -360,7 +360,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dRi-Xz-ZWO">
-                                            <rect key="frame" x="16" y="32" width="317" height="21"/>
+                                            <rect key="frame" x="8" y="32" width="326" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="jT3-iK-vr0"/>
                                             </constraints>
@@ -369,7 +369,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Value" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wkh-Ri-zlf">
-                                            <rect key="frame" x="16" y="53" width="317" height="26"/>
+                                            <rect key="frame" x="8" y="53" width="326" height="26"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -416,7 +416,7 @@
             <objects>
                 <tableViewController id="82F-F1-Zin" customClass="ModelDetailsEditTableViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="rUQ-mq-aYQ">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -511,7 +511,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jwE-6a-Kbw">
-                                            <rect key="frame" x="10" y="10" width="321" height="30"/>
+                                            <rect key="frame" x="10" y="10" width="322" height="30"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="30" id="tEw-nW-Q6d"/>
                                             </constraints>
@@ -520,7 +520,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HCf-mW-9HE">
-                                            <rect key="frame" x="10" y="48" width="315" height="21"/>
+                                            <rect key="frame" x="10" y="48" width="316" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="dBW-Yj-DhY"/>
                                             </constraints>
@@ -553,7 +553,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Many Relation" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="USs-Xw-DTk">
-                                            <rect key="frame" x="10" y="10" width="321" height="30"/>
+                                            <rect key="frame" x="10" y="10" width="322" height="30"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="30" id="xvi-uA-XiQ"/>
                                             </constraints>
@@ -562,7 +562,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="auB-Vd-Kbe">
-                                            <rect key="frame" x="10" y="48" width="315" height="21"/>
+                                            <rect key="frame" x="10" y="48" width="316" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="21" id="DqX-de-l6g"/>
                                             </constraints>
@@ -613,15 +613,15 @@
         <!--Remove-->
         <scene sceneID="IR3-Wa-wHQ">
             <objects>
-                <viewController id="Odq-lr-XBq" sceneMemberID="viewController">
+                <viewController id="Odq-lr-XBq" customClass="EditManyRelationTabController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="DtG-Sv-udw">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1TV-kK-uXu">
-                                <rect key="frame" x="0.0" y="44" width="375" height="69"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="0.0"/>
                                 <connections>
-                                    <segue destination="gyO-Zc-7Ka" kind="embed" id="NaY-sJ-EBz"/>
+                                    <segue destination="gyO-Zc-7Ka" kind="embed" identifier="Embed" id="NaY-sJ-EBz"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -634,7 +634,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="PmC-D0-mSx"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Remove" id="f9e-81-kmw"/>
+                    <tabBarItem key="tabBarItem" title="Remove" image="tab-remove" id="f9e-81-kmw"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0dm-z1-yJY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -659,15 +659,15 @@
         <!--Add -->
         <scene sceneID="tKV-Ku-u42">
             <objects>
-                <viewController id="Zwk-Pq-UJp" sceneMemberID="viewController">
+                <viewController id="Zwk-Pq-UJp" customClass="EditManyRelationTabController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="PRT-bv-np9">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="69"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="0.0"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FW9-I6-zMe">
-                                <rect key="frame" x="0.0" y="-235" width="375" height="69"/>
+                                <rect key="frame" x="0.0" y="-235" width="375" height="0.0"/>
                                 <connections>
-                                    <segue destination="gyO-Zc-7Ka" kind="embed" id="5CY-56-HAK"/>
+                                    <segue destination="gyO-Zc-7Ka" kind="embed" identifier="Embed" id="5CY-56-HAK"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -680,7 +680,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6NC-0O-X84"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Add " id="Y3a-8X-msD"/>
+                    <tabBarItem key="tabBarItem" title="Add " image="tab-add" id="Y3a-8X-msD"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="57g-T5-eAC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -690,6 +690,7 @@
         <scene sceneID="A9k-U2-RZJ">
             <objects>
                 <tabBarController id="mWE-OQ-f1j" customClass="EditManyRelationViewController" customModule="LaravelConnect" customModuleProvider="target" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="lab-V6-WHt">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Mca-s1-3oj">
                             <connections>
@@ -781,7 +782,11 @@
             <point key="canvasLocation" x="1065" y="-622"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="tab-add" width="25" height="25"/>
+        <image name="tab-remove" width="25" height="25"/>
+    </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="5CY-56-HAK"/>
+        <segue reference="NaY-sJ-EBz"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -200,6 +200,9 @@ public protocol ConnectManyRelationProtocol : ConnectRelationProtocol {
     func list() -> ModelList
     func localList() -> NSSet
     func list(filter: Filter , include:[String] ) -> ModelList
+    
+    func updateRelation(add:Array<ConnectModel>?, remove:Array<ConnectModel>?)
+    
 }
 
 public class ConnectManyRelation<T: ConnectModel> : ConnectRelation<T>, ConnectManyRelationProtocol {
@@ -210,6 +213,17 @@ public class ConnectManyRelation<T: ConnectModel> : ConnectRelation<T>, ConnectM
                          description: NSRelationshipDescription){
         super.init(parent:parent, description: description)
         self.set = parent.mutableSetValue(forKey: self.name)
+    }
+    
+    public func updateRelation(add:Array<ConnectModel>?, remove:Array<ConnectModel>?) {
+        
+        if let toAdd:Array = add  {
+            self.set.addObjects(from: toAdd)
+        }
+        if let toRemove:Array = remove  {
+            self.parent.removeFromManyRelation(relationName: self.name, from: toRemove)
+        }
+
     }
     
     public func localList() -> NSSet {
