@@ -415,6 +415,13 @@ class LaravelPostRequest: LaravelRequest {
         return body as Data
         
     }
+
+    public func addPostParam(name:String, file value:UploadedImage) {
+        if let image:UIImage = value.image, let imageData:Data = UIImagePNGRepresentation(image) {
+            var fileUpload = FileUpload(data: imageData, name: name, fileName: name, mimeType: "image/png")
+            self.files.append(fileUpload)
+        }
+    }
     
     public func addPostParam(name:String, value:Any) {
         self.bodyParams[name] = String(describing: value)
@@ -439,6 +446,8 @@ class LaravelPostRequest: LaravelRequest {
             self.addPostParam(name: name, value: value)
         }
     }
+    
+ 
     
     // MARK: - Private
     fileprivate func data(for file: FileUpload) -> Data {

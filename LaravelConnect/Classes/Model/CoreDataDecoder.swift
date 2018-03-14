@@ -133,10 +133,21 @@ public class CoreDataDecoder  {
     
     
     private func parseValue(value:Any?, attribute:NSAttributeDescription) -> Any? {
+     
+        let attributeType:NSAttributeType = attribute.attributeType
+        let valueTransformerName = attribute.valueTransformerName
+        
+        // We have UploadedImage
+        if let valueTransformerName = valueTransformerName, "UploadedImageCoreDataTransformer".elementsEqual(valueTransformerName){
+            if let url:String = value as? String {
+                return UploadedImage(string: url)
+            }else {
+                return UploadedImage(string: nil)
+            }
+        }
         
         let className = attribute.attributeValueClassName
      
-        
         switch value {
             
         case let isNull as NSNull:

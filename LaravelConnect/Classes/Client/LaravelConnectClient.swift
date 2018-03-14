@@ -125,7 +125,12 @@ class LaravelConnectClient {
         
           
         for (jsonKey,value) in model.changedProperties {
-            request.addPostParam(name: jsonKey, value: value)
+            
+            if let file:UploadedImage = value as? UploadedImage {
+                request.addPostParam(name: jsonKey, file: file)
+            }else{
+                request.addPostParam(name: jsonKey, value: value)
+            }
         }
 
         request.addPostParamDictionary(name: "relations", values: model.changedRelations)

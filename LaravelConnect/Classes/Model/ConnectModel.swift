@@ -25,6 +25,7 @@ import CoreData
 import Foundation
 import Square1CoreData
 
+
 public protocol ModelPresenter {
     
     func modelTitle(model:ConnectModel) -> String
@@ -205,13 +206,13 @@ open class ConnectModel: NSManagedObject, Managed {
     
     /// Dictionary of the properties changed for this model keyed by their Json key. This is ready to be sent over to the
     /// server for the object to be updated
-    public var changedProperties:[String:String] {
+    public var changedProperties:[String:Any] {
         
-        var changed:[String:String] = [:]
+        var changed:[String:Any] = [:]
         
         for (name,value) in self.changedValues() {
             if let attribute:NSAttributeDescription = self.attributes[name]  {
-                changed[attribute.jsonKey] = String(describing: value)
+                changed[attribute.jsonKey] = value
             }
         }
         
@@ -359,6 +360,15 @@ open class ConnectModel: NSManagedObject, Managed {
     public func numberAttribute(name:String, defaultValue:NSNumber = 0.0) -> NSNumber {
         if let valueP = self.attributes[name] {
             if let value:NSNumber = self.value(forKey: valueP.name) as? NSNumber {
+                return value
+            }
+        }
+        return defaultValue
+    }
+    
+    public func uploadedImageAttribute(name:String, defaultValue:UploadedImage = UploadedImage()) -> UploadedImage {
+        if let valueP = self.attributes[name] {
+            if let value:UploadedImage = self.value(forKey: valueP.name) as? UploadedImage {
                 return value
             }
         }

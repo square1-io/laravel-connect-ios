@@ -26,6 +26,7 @@ public class CoreDataManager : NSObject {
         self.modelName = modelName
         
         super.init()
+         ValueTransformer.setValueTransformer(UploadedImageCoreDataTransformer(), forName: .UploadedImageCoreDataTransformerName)
     }
     
     public func initCoreDataStack(completionClosure: @escaping () -> ()) {

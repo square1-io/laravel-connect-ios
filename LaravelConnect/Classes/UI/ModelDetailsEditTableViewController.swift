@@ -117,10 +117,14 @@ public class ModelDetailsEditNavigationController: UINavigationController  {
     }
 }
 
-class ModelDetailsEditTableViewController : UITableViewController, ModelListTableViewDelegate   {
+class ModelDetailsEditTableViewController : UITableViewController, ModelListTableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    let imagePicker = UIImagePickerController()
     
     public var model:ConnectModel!
     private var presenter:ModelPresenter!
+    
+    private var selectedImageEditHelper:EditHelper?
     
     private var editableFields:[String:EditHelperProtocol]!
     private var editableFieldsName:[String]!
@@ -128,6 +132,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
     override func viewDidLoad() {
         super.viewDidLoad()
         
+         imagePicker.delegate = self
     
         self.presenter = LaravelConnect.shared().presenterForClass(className: self.model.className)
         
@@ -139,7 +144,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
         for(name,attribute) in self.model.editableAttributes {
             self.editableFieldsName.append(name)
             let type = attribute.attributeType
-            var field:EditHelper
+            var field:EditHelperProtocol
             print("atttibute \(attribute.name) = \(attribute.attributeValueClassName) \(attribute.attributeType.rawValue) "    )
             switch(type){
             case .doubleAttributeType,
@@ -151,7 +156,8 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
              .booleanAttributeType:
                 let value = self.model.numberAttribute(name: name)
                 field = EditHelper(name: name, cellReusableId:"EditNumberAttributeTableViewCell", initialValue: value, newValue: value)
-                
+            case .transformableAttributeType:
+                field = self.fieldForTrasformable(name: name, attribute: attribute)
             default:
                 let value = self.model.stringAttribute(name: name)
                 field = EditHelper(name: name, cellReusableId:"EditStringAttributeTableViewCell", initialValue: value, newValue: value)
@@ -190,6 +196,22 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
             self.dismiss(animated: true, completion: nil)
             
         }
+    }
+    
+    private func fieldForTrasformable(name:String, attribute:NSAttributeDescription) -> EditHelperProtocol{
+    
+        if let transformable = attribute.valueTransformerName {
+            
+            if(transformable.elementsEqual(NSValueTransformerName.UploadedImageCoreDataTransformerName.rawValue)){
+            let value = self.model.uploadedImageAttribute(name: name)
+             return EditHelper(name: name, cellReusableId:"EditUploadedImageTableViewCell", initialValue: value, newValue: value)
+            }
+            
+        }
+        
+        let value = self.model.stringAttribute(name: name)
+        return  EditHelper(name: name, cellReusableId:"EditStringAttributeTableViewCell", initialValue: value, newValue: value)
+    
     }
     
     @IBAction func save(sender: AnyObject) {
@@ -287,6 +309,45 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
         return cell
     }
 
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: false)
+        
+        let name = editableFieldsName[indexPath.row]
+        let field = self.editableFields[name]!
+        if let imageUploaded:UploadedImage = field.newValue as? UploadedImage {
+            
+            imagePicker.allowsEditing = false
+            imagePicker.sourceType = .photoLibrary
+            self.selectedImageEditHelper = field as? EditHelper
+            present(imagePicker, animated: true, completion: nil)
+            
+        }
+        
+    }
+    
+    //MARK: - ImagePicker delegate
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
+        if let image:UIImage = info[UIImagePickerControllerOriginalImage] as? UIImage,
+            var field:EditHelper = self.selectedImageEditHelper as? EditHelper{
+            var newValue = UploadedImage()
+            newValue.image = image
+            field.newValue = newValue
+            self.editableFields[field.name] = field
+            self.tableView.reloadData()
+        }
+        
+        self.selectedImageEditHelper = nil
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+   
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.selectedImageEditHelper = nil
+        
+    }
 
     
     // MARK: - Navigation
