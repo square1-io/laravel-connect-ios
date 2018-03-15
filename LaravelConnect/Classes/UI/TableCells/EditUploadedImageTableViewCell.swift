@@ -32,6 +32,7 @@ class EditUploadedImageTableViewCell: BaseEditTableViewCell {
         self.labelName.text = editable.name
         
        if let uploaded:UploadedImage = editable.newValue as? UploadedImage, let url:URL = uploaded.imageUrl {
+            self.labelValue.text = String(describing:url)
             self.webView.loadRequest(URLRequest.init(url: url))
         }
     }

@@ -45,7 +45,32 @@ struct EditHelper: EditHelperProtocol {
         }
         return ""
     }
- 
+}
+
+struct UploadedFileHelper: EditHelperProtocol {
+    
+    let name:String
+    let cellReusableId:String
+    let initialValue:Any?
+    var newValue:Any?
+    
+    func updated() -> Bool {
+        
+        if let initialV:UploadedImage = initialValue as? UploadedImage ,
+            let newV:UploadedImage = newValue as? UploadedImage {
+            return initialV != newV
+        }
+        
+        return false
+    }
+    
+    func value() -> Any {
+        if let v = newValue {
+            return v
+        }
+        return ""
+    }
+    
 }
 
 struct ManyEditHelper : EditHelperProtocol {
@@ -124,7 +149,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
     public var model:ConnectModel!
     private var presenter:ModelPresenter!
     
-    private var selectedImageEditHelper:EditHelper?
+    private var selectedImageEditHelper:EditHelperProtocol?
     
     private var editableFields:[String:EditHelperProtocol]!
     private var editableFieldsName:[String]!
@@ -204,7 +229,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
             
             if(transformable.elementsEqual(NSValueTransformerName.UploadedImageCoreDataTransformerName.rawValue)){
             let value = self.model.uploadedImageAttribute(name: name)
-             return EditHelper(name: name, cellReusableId:"EditUploadedImageTableViewCell", initialValue: value, newValue: value)
+             return UploadedFileHelper(name: name, cellReusableId:"EditUploadedImageTableViewCell", initialValue: value, newValue: value)
             }
             
         }
@@ -223,15 +248,15 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
             if(field.updated() == true ) {
                 updated = true
                 
-                if let paramHelper:EditHelper = field as? EditHelper {
-                    print( "updated param to \(paramHelper.name) to \(paramHelper.value())")
-                    self.model.setValue(paramHelper.value(), forKey: paramHelper.name)
-                }
-                else if let paramHelper:ManyEditHelper = field as? ManyEditHelper {
+                 if let paramHelper:ManyEditHelper = field as? ManyEditHelper {
                     print( "updated relation  \(paramHelper.name) to \(paramHelper.value())")
                     if let connectManyrelation:ConnectManyRelationProtocol = self.model.connectRelations[paramHelper.name] as? ConnectManyRelationProtocol{
                         connectManyrelation.updateRelation(add: paramHelper.add, remove: paramHelper.remove)
                     }
+                }
+                else if let paramHelper:EditHelperProtocol = field as? EditHelperProtocol {
+                    print( "updated param to \(paramHelper.name) to \(paramHelper.value())")
+                    self.model.setValue(paramHelper.value(), forKey: paramHelper.name)
                 }
             }
             
@@ -247,6 +272,8 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
                 }
                 self.showResultDialog()
             })
+        }else {
+            self.showDialog(title: "Warning...", message: "There are not changes to save.")
         }
         
     }
@@ -264,20 +291,21 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
     
     private func showResultDialog (){
 
-        let alert = UIAlertController(title: "Saved", message: "Changed Saved", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.default, handler:{(action) in
+        self.showDialog(title: "Saved", message: "Changes were Saved",  handler:{(action) in
             if((self.presentingViewController) != nil){
                 self.dismiss(animated: true, completion: nil)
             }
-        }))
-        self.present(alert, animated: true, completion: nil)
-        
+        });
     }
     
     private func showErrorDialog (error:Error){
+        self.showDialog(title: "Error", message:  error.localizedDescription)
+    }
+    
+    private func showDialog (title:String, message:String, button:String = "ok", handler: ((UIAlertAction) -> Swift.Void)? = nil){
         
-        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.default, handler: nil))
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: button, style: UIAlertActionStyle.default, handler: handler))
         self.present(alert, animated: true, completion: nil)
         
     }
@@ -319,7 +347,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
             
             imagePicker.allowsEditing = false
             imagePicker.sourceType = .photoLibrary
-            self.selectedImageEditHelper = field as? EditHelper
+            self.selectedImageEditHelper = field
             present(imagePicker, animated: true, completion: nil)
             
         }
@@ -330,7 +358,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         if let image:UIImage = info[UIImagePickerControllerOriginalImage] as? UIImage,
-            var field:EditHelper = self.selectedImageEditHelper as? EditHelper{
+            var field:UploadedFileHelper = self.selectedImageEditHelper as? UploadedFileHelper{
             var newValue = UploadedImage()
             newValue.image = image
             field.newValue = newValue

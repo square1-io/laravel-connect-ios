@@ -7,12 +7,13 @@
 
 import UIKit
 import CoreData
+import SafariServices
 
 private let ATTRIBUTES_LABEL = "Attributes"
 private let ONE_LABEL = "One Relations"
 private let MANY_LABEL = "Many Relations"
 
-class ModelDetailsTableViewController: UITableViewController {
+class ModelDetailsTableViewController: UITableViewController, SFSafariViewControllerDelegate {
     
     public var model:ConnectModel!
     public var modelId:Any?
@@ -110,6 +111,7 @@ class ModelDetailsTableViewController: UITableViewController {
         self.loadModel(userInitiated: true)
     }
     
+    
     private func loadModel(userInitiated:Bool) {
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
@@ -160,8 +162,7 @@ class ModelDetailsTableViewController: UITableViewController {
         var cell:UITableViewCell
         
         if(ATTRIBUTES_LABEL.elementsEqual(currentSection)){
-            cell = tableView.dequeueReusableCell(withIdentifier: "ModelAttributeCell", for: indexPath)
-            self.setAttributeCell(cell: cell as! ModelAttributeCell, indexPath: indexPath)
+            cell = self.setAttributeCell(tableView: tableView, indexPath: indexPath)
         }
         else if(ONE_LABEL.elementsEqual(currentSection)){
             cell = tableView.dequeueReusableCell(withIdentifier: "OneRelationCell", for: indexPath)
@@ -175,26 +176,74 @@ class ModelDetailsTableViewController: UITableViewController {
         return cell
     }
     
-    private func setAttributeCell(cell:ModelAttributeCell, indexPath:IndexPath){
+    private func setAttributeCell(tableView:UITableView, indexPath:IndexPath) -> UITableViewCell {
 
+        var cell:UITableViewCell!
+        
         if let sec = self.sections,
             let secIndex:Int = indexPath.section,
             let attributes:[String] = sec[secIndex],
-            let name:String = attributes[indexPath.row],
-            let attribute = self.model?.attributes[name]{
+            let name:String = attributes[indexPath.row]{
             
-            cell.labelName.text = name.capitalized
-            cell.labelType.text = attribute.attributeValueClassName?.lowercased()
-            if let  value = self.model?.value(forKey: name){
-                cell.labelValue.text = String( describing: value )
+            let value = self.model.value(forKey: name)
+            
+            if let image:UploadedImage = value as? UploadedImage {
+                cell = self.setupUploadedImageAttributeCell(tableView: tableView, indexPath: indexPath, name: name, value: image)
+            }else {
+                cell = self.setupStringAttributeCell(tableView: tableView, indexPath:indexPath, name: name, value: value)
+            }
+        }
+        
+        return cell
+    }
+
+    private func setupUploadedImageAttributeCell(tableView:UITableView, indexPath:IndexPath, name:String, value:UploadedImage) -> UITableViewCell {
+        
+        let cell:ModelUploadedFileCell = tableView.dequeueReusableCell(withIdentifier: "ModelUploadedFileCell", for: indexPath) as! ModelUploadedFileCell
+        
+            cell.labelType.text =  "uploaded image"
+        
+            cell.labelName.text = name
+            if let url = value.imageUrl {
+                cell.labelValue.text = String( describing: url )
+                cell.url = url
                 cell.labelValue.textColor = UIColor.black
             }else {
                 cell.labelValue.text = "not set"
+                cell.url = nil
                 cell.labelValue.textColor = UIColor.lightGray
             }
+        
+        
+        return cell
+    }
+    
+    private func setupStringAttributeCell(tableView:UITableView, indexPath:IndexPath, name:String, value:Any?) -> UITableViewCell {
+        
+        let cell:ModelAttributeCell = tableView.dequeueReusableCell(withIdentifier: "ModelAttributeCell", for: indexPath) as! ModelAttributeCell
+        
+        if let attribute = self.model?.attributes[name],
+            let type = attribute.attributeValueClassName {
+            
+          cell.labelType.text = type
             
         }
+        
+        cell.labelName.text = name
+        
+        if let v = value  {
+            cell.labelValue.text = String( describing: v )
+            cell.labelValue.textColor = UIColor.black
+        }else {
+            cell.labelValue.text = "not set"
+            cell.labelValue.textColor = UIColor.lightGray
+        }
+        
+        return cell
     }
+    
+    //ModelUploadedFileCell
+    
     
     private func attributeForIndexPath(indexPath:IndexPath) -> NSAttributeDescription?{
         
@@ -288,36 +337,30 @@ class ModelDetailsTableViewController: UITableViewController {
         return false
     }
     
-    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        return []
-    }
-    
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    
 
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
+    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+        
+        if let sec = self.sections,
+            let secIndex:Int = indexPath.section,
+            let attributes:[String] = sec[secIndex],
+            let name:String = attributes[indexPath.row]{
+            
+            let value = self.model.value(forKey: name)
+            
+            if let image:UploadedImage = value as? UploadedImage,
+                let url = image.imageUrl {
+                
+                let safariVC = SFSafariViewController(url: url)
+                self.present(safariVC, animated: true, completion: nil)
+            }
+        }
     }
-    */
 
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController)
+    {
+        controller.dismiss(animated: true, completion: nil)
     }
-    */
-
     
     // MARK: - Navigation
 

@@ -110,7 +110,11 @@ public class UploadedImage: NSObject, NSCoding  {
     
     static func ==(lhs: UploadedImage, rhs: UploadedImage) -> Bool
     {
-        return lhs.imageUrl == rhs.imageUrl
+        return lhs.imageUrl == rhs.imageUrl && lhs.image == rhs.image
     }
-    
+
+    static func !=(lhs: UploadedImage, rhs: UploadedImage) -> Bool
+    {
+        return !(lhs == rhs)
+    }
 }

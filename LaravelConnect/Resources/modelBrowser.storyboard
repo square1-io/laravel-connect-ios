@@ -395,6 +395,57 @@
                                     <segue destination="gyO-Zc-7Ka" kind="show" identifier="ManyRelationSegue" id="vX3-BM-5ez"/>
                                 </connections>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="ModelUploadedFileCell" rowHeight="90" id="yJB-L5-Cj5" customClass="ModelUploadedFileCell" customModule="LaravelConnect" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="298" width="375" height="90"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="yJB-L5-Cj5" id="CeP-i0-MtC">
+                                    <rect key="frame" x="0.0" y="0.0" width="341" height="89.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Uploaded File" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JQZ-ue-cDm">
+                                            <rect key="frame" x="16" y="11" width="317" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="Lnb-EU-ylL"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0tJ-Br-u8M">
+                                            <rect key="frame" x="16" y="32" width="317" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="0aa-JI-KSJ"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="light" pointSize="10"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Value" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wEN-nm-L3c">
+                                            <rect key="frame" x="16" y="53" width="317" height="26"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="0tJ-Br-u8M" firstAttribute="leading" secondItem="CeP-i0-MtC" secondAttribute="leadingMargin" id="404-uk-6HO"/>
+                                        <constraint firstItem="JQZ-ue-cDm" firstAttribute="leading" secondItem="CeP-i0-MtC" secondAttribute="leadingMargin" id="ByI-4m-qEi"/>
+                                        <constraint firstItem="JQZ-ue-cDm" firstAttribute="trailing" secondItem="CeP-i0-MtC" secondAttribute="trailingMargin" id="Ltj-Zw-ykQ"/>
+                                        <constraint firstItem="wEN-nm-L3c" firstAttribute="leading" secondItem="CeP-i0-MtC" secondAttribute="leadingMargin" id="T7N-ro-bts"/>
+                                        <constraint firstItem="0tJ-Br-u8M" firstAttribute="top" secondItem="JQZ-ue-cDm" secondAttribute="bottom" id="XTa-tU-yCZ"/>
+                                        <constraint firstItem="wEN-nm-L3c" firstAttribute="top" secondItem="0tJ-Br-u8M" secondAttribute="bottom" id="czi-cW-BeD"/>
+                                        <constraint firstItem="0tJ-Br-u8M" firstAttribute="trailing" secondItem="CeP-i0-MtC" secondAttribute="trailingMargin" id="nuR-kx-R7J"/>
+                                        <constraint firstItem="wEN-nm-L3c" firstAttribute="trailing" secondItem="CeP-i0-MtC" secondAttribute="trailingMargin" id="sFv-Re-E5G"/>
+                                        <constraint firstItem="JQZ-ue-cDm" firstAttribute="top" secondItem="CeP-i0-MtC" secondAttribute="topMargin" id="uEh-GQ-N8o"/>
+                                        <constraint firstItem="wEN-nm-L3c" firstAttribute="bottom" secondItem="CeP-i0-MtC" secondAttribute="bottomMargin" id="w3H-NM-0H4"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="labelName" destination="JQZ-ue-cDm" id="cGf-w1-Sda"/>
+                                    <outlet property="labelType" destination="0tJ-Br-u8M" id="MIL-VW-vKR"/>
+                                    <outlet property="labelValue" destination="wEN-nm-L3c" id="euV-1H-Puz"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="3VE-MS-d5c" id="AC6-6v-9za"/>
@@ -841,6 +892,6 @@
         <image name="tab-remove" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="WGE-H6-cOv"/>
+        <segue reference="vX3-BM-5ez"/>
     </inferredMetricsTieBreakers>
 </document>
