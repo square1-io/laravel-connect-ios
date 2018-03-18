@@ -33,7 +33,7 @@ public class LaravelConnect: NSObject {
     
     // MARK: - Properties
     private var httpClient: LaravelConnectClient!
-    private var settings: LaravelSettings!
+    public private(set) var settings: LaravelSettings!
     private var dataManager: CoreDataManager!
     
     private var presentersMap:Dictionary<String, ModelPresenter> = Dictionary()
@@ -78,6 +78,7 @@ public class LaravelConnect: NSObject {
     public static func shared() -> LaravelConnect {
         return instanceWithName(name: "default")
     }
+    
 
     public func coreData() -> CoreDataManager {
         return self.dataManager;
@@ -135,11 +136,12 @@ public class LaravelConnect: NSObject {
     }
     
     public func list<T>(model: ConnectModel.Type, relation: ConnectManyRelation<T>?, filter: Filter = Filter(), include:[String] = []) -> ModelList {
-        var entity = model.entity()
-        if  let e = relation?.relatedType.entity() {
+        
+        var entity = model
+        if  let e = relation?.relatedType {
             entity = e
         }
-        return ModelList(entity:entity,
+        return ModelList(relatedType:entity,
                          request:self.httpClient.newModelList(model:model, relation:relation, include:include),
                          filter:filter)
     }
@@ -163,6 +165,11 @@ public class LaravelConnect: NSObject {
     }
     
 
+    public func presenterForClass(classType: ConnectModel.Type) -> ModelPresenter {
+
+        return self.presenterForClass(className: String(describing:classType))
+    }
+    
     public func presenterForClass(className: String) -> ModelPresenter {
         
         if let presenter = self.presentersMap[className] {
@@ -171,8 +178,12 @@ public class LaravelConnect: NSObject {
         
         return DefaultPresenter()
     }
+
+    public func presenterForClass(classType: ConnectModel.Type, presenter:ModelPresenter) {
+        self.presenterForClass(className: String(describing:classType), presenter: presenter)
+    }
     
-    public func presenterForClass(className: String, presenter:ModelPresenter) {
+    private func presenterForClass(className: String, presenter:ModelPresenter) {
         self.presentersMap[className]  = presenter
     }
     

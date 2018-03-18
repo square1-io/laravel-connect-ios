@@ -34,7 +34,7 @@ public protocol LaravelSettings {
     //array of the root path elements for the API ["api","v1"] => /api/v1/
     var apiRootPathSegments: [String] { get }
     
-    //returns true to include by default the to-one relations when fetchin models
+    //returns true to include by default the to-one relations when fetching models
     // if set to false will have to manually requests them
     var apiIncludeOneRelations:Bool {get}
     
@@ -51,11 +51,11 @@ public protocol LaravelSettings {
     
     //date format
     var laravelDateFormat: String { get }
+    
+    var serverVersion: String {get}
 }
 
 public extension LaravelSettings {
-    
-    var apiKeyHeaderName: String { return "x-connect-api-key"}
     
     var apiKeyValue: String { return "" }
     

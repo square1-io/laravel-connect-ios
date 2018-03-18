@@ -42,22 +42,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+        User.Gender.MALE
+        
         // Override point for customization after application launch.
-        LaravelConnect.configure(settings: SampleAppConnectSettings(), onCompletion:  { (instance) in
+        LaravelConnect.configure(settings: LiveConnectSettings(), onCompletion:  { (instance) in
             print("LaravelConnect is Ready!")
-            instance.presenterForClass(className: "Phone", presenter: PhonePresenter())
-            instance.presenterForClass(className: "User", presenter: UserPresenter())
+            instance.presenterForClass(classType: Phone.self, presenter: PhonePresenter())
+            instance.presenterForClass(classType: User.self, presenter: UserPresenter())
         });
     
-        
-//        //**
-//        "filter[0][medias.event_id][equal][0]": eventId,
-//        "filter[0][medias.event_id][equal][1]": 5,
-//        "filter[0][id][equal][1]": 52323,
-//        "filter[1][medias.event_id][equal][0]": 666,
-//        "filter[1][medias.event_id][equal][1]": 666,
-//        "filter[1][id][equal][1]": 52323
-        
         return true
     }
 

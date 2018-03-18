@@ -61,7 +61,11 @@ class EditManyRelationTabController: UIViewController, ModelListTableViewDelegat
   
     
     func onItemsSelected(selected:Array<ConnectModel>, selectionMetaData:Any) {
-        self.tabBarItem.badgeValue = "\(selected.count)"
+        if selected.count > 0 {
+            self.tabBarItem.badgeValue = "\(selected.count)"
+        }else {
+            self.tabBarItem.badgeValue = nil
+        }
         self.selected = selected
     }
     

@@ -65,10 +65,10 @@ class ModelListTableViewController: UITableViewController, ModelListOptionsDeleg
             }
         }
         
-        if let name = self.list?.entity.name {
-            self.presenter = LaravelConnect.shared().presenterForClass(className: name)
+        if let classType = self.list?.relatedType {
+            self.presenter = LaravelConnect.shared().presenterForClass(classType: classType)
             let action = self.mode == .Browse ? "" : "Select"
-            self.navigationItem.titleView = setTitle(title: "\(action) \(name)", subtitle: "                     ")
+            self.navigationItem.titleView = setTitle(title: "\(action) \(classType)", subtitle: "                     ")
         }
         
        

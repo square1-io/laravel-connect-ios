@@ -78,8 +78,9 @@ open class ConnectModel: NSManagedObject, Managed {
     private var nonEditableFields:Array<String>!
     private var removedFromRelation:Dictionary<String,Set<ConnectModel>>!
     
+    
+    
     private func initialize(){
-        
         self.removedFromRelation = Dictionary<String,Set<ConnectModel>>();
         self.nonEditableFields = Array()
         
@@ -218,6 +219,12 @@ open class ConnectModel: NSManagedObject, Managed {
         
         return changed
         
+    }
+    
+    public func formatDate(date:Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = ConnectModel.connect().settings.laravelDateFormat
+        return dateFormatter.string(from:date)
     }
     
     override open func didSave(){
@@ -364,6 +371,15 @@ open class ConnectModel: NSManagedObject, Managed {
             }
         }
         return defaultValue
+    }
+    
+    public func dateAttribute(name:String) -> NSDate? {
+        if let valueP = self.attributes[name] {
+            if let value:NSDate = self.value(forKey: valueP.name) as? NSDate {
+                return value
+            }
+        }
+        return nil
     }
     
     public func uploadedImageAttribute(name:String, defaultValue:UploadedImage = UploadedImage()) -> UploadedImage {

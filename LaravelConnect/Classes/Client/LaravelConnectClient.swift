@@ -90,6 +90,13 @@ class LaravelConnectClient {
     
     private func addCommonHeadersToRequest(request: LaravelRequest) {
         
+        var ua = UserAgent.UAString()
+        ua = "\(ua) Connect/\(settings.serverVersion)"
+#if DEBUG
+    print( "User Agent:\(ua)" )
+#endif
+        request.addRequestHeader(name: "User-Agent", value: ua )
+        
         let authToken = Auth.shared.token()
 
         if(authToken != nil) {// add Authorization Bearer
@@ -126,7 +133,11 @@ class LaravelConnectClient {
           
         for (jsonKey,value) in model.changedProperties {
             
-            if let file:UploadedImage = value as? UploadedImage {
+            if let date:Date = value as? Date {
+                let stringDate = model.formatDate(date: date)
+                request.addPostParam(name: jsonKey, value: stringDate)
+            }
+            else if let file:UploadedImage = value as? UploadedImage {
                 request.addPostParam(name: jsonKey, file: file)
             }else{
                 request.addPostParam(name: jsonKey, value: value)
@@ -212,3 +223,46 @@ class LaravelConnectClient {
     }
     
 }
+
+
+struct UserAgent {
+
+//eg. Darwin/16.3.0
+static func DarwinVersion() -> String {
+    var sysinfo = utsname()
+    uname(&sysinfo)
+    let dv = String(bytes: Data(bytes: &sysinfo.release, count: Int(_SYS_NAMELEN)), encoding: .ascii)!.trimmingCharacters(in: .controlCharacters)
+    return "Darwin/\(dv)"
+}
+//eg. CFNetwork/808.3
+static func CFNetworkVersion() -> String {
+    let dictionary = Bundle(identifier: "com.apple.CFNetwork")?.infoDictionary!
+    let version = dictionary?["CFBundleShortVersionString"] as! String
+    return "CFNetwork/\(version)"
+}
+
+//eg. iOS/10_1
+static func deviceVersion() -> String {
+    let currentDevice = UIDevice.current
+    return "\(currentDevice.systemName)/\(currentDevice.systemVersion)"
+}
+//eg. iPhone5,2
+static func deviceName() -> String {
+    var sysinfo = utsname()
+    uname(&sysinfo)
+    return String(bytes: Data(bytes: &sysinfo.machine, count: Int(_SYS_NAMELEN)), encoding: .ascii)!.trimmingCharacters(in: .controlCharacters)
+}
+//eg. MyApp/1
+static func appNameAndVersion() -> String {
+    let dictionary = Bundle.main.infoDictionary!
+    let version = dictionary["CFBundleShortVersionString"] as! String
+    let name = dictionary["CFBundleName"] as! String
+    return "\(name)/\(version)"
+}
+
+ static func UAString() -> String {
+    return "\(appNameAndVersion()) \(deviceName()) \(deviceVersion()) \(CFNetworkVersion()) \(DarwinVersion())"
+}
+}
+
+

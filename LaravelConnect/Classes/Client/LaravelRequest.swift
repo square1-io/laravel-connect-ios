@@ -107,6 +107,17 @@ public class LaravelPaginatedResponse: LaravelResponse {
 }
 
 public class LaravelRequest: LaravelServiceRequest, LaravelTask   {
+   
+    public var progress: Progress {
+        
+        if #available(iOS 11.0, *) {
+            if let p = self.task?.progress {
+                return p
+            }
+        }
+        return Progress(totalUnitCount: 0)
+    }
+    
     
     public enum State {
         case Idle

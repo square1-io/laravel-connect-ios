@@ -54,6 +54,9 @@ public class ModelList : NSObject, Sequence {
     public let sort: Sort
     private var ids:[ModelId]
     private var items:Dictionary<ModelId, ConnectModel>
+    
+    public let relatedType:ConnectModel.Type
+    
     public let entity:NSEntityDescription
     public var entityName:String {
         get {
@@ -72,8 +75,9 @@ public class ModelList : NSObject, Sequence {
     
     public private(set) var currentPage: Pagination
     
-    init(entity:NSEntityDescription, request:LaravelRequest, filter:Filter, sort:Sort = Sort())  {
-        self.entity = entity
+    init(relatedType:ConnectModel.Type, request:LaravelRequest, filter:Filter, sort:Sort = Sort())  {
+        self.relatedType = relatedType
+        self.entity = relatedType.entity()
         self.request = request
         self.filter = filter
         self.sort = sort
@@ -98,7 +102,7 @@ public class ModelList : NSObject, Sequence {
             f = newFilter!
         }
 
-        return ModelList(entity:self.entity,
+        return ModelList(relatedType:self.relatedType,
                          request:self.request,
                          filter:f, sort:s)
     }

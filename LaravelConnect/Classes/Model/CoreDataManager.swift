@@ -41,7 +41,8 @@ public class CoreDataManager : NSObject {
         }
         
         self.persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: mom)
-       
+        
+    
         let queue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
         queue.async {
             guard let docURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {
@@ -50,7 +51,11 @@ public class CoreDataManager : NSObject {
             let storePath : String = self.modelName + ".sqlite";
             let storeURL = docURL.appendingPathComponent( storePath )
             do {
-                try self.persistentStoreCoordinator?.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL, options: nil)
+     
+                var options = Dictionary<AnyHashable,Any>()
+                    options[NSMigratePersistentStoresAutomaticallyOption] = true
+                    options[NSInferMappingModelAutomaticallyOption] = true
+                try self.persistentStoreCoordinator?.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeURL, options: options)
                 //The callback block is expected to complete the User Interface and therefore should be presented back on the main queue so that the user interface does not need to be concerned with which queue this call is coming from.
                 DispatchQueue.main.sync(execute: {
                      

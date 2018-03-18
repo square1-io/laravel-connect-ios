@@ -36,7 +36,7 @@ struct EditHelper: EditHelperProtocol {
             return v1 != v2
         }
         
-        return false
+        return true
     }
     
     func value() -> Any {
@@ -181,8 +181,13 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
              .booleanAttributeType:
                 let value = self.model.numberAttribute(name: name)
                 field = EditHelper(name: name, cellReusableId:"EditNumberAttributeTableViewCell", initialValue: value, newValue: value)
+                break
             case .transformableAttributeType:
                 field = self.fieldForTrasformable(name: name, attribute: attribute)
+                break
+            case .dateAttributeType:
+                field = self.fieldForDate(name: name, attribute: attribute)
+                break
             default:
                 let value = self.model.stringAttribute(name: name)
                 field = EditHelper(name: name, cellReusableId:"EditStringAttributeTableViewCell", initialValue: value, newValue: value)
@@ -237,6 +242,13 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
         let value = self.model.stringAttribute(name: name)
         return  EditHelper(name: name, cellReusableId:"EditStringAttributeTableViewCell", initialValue: value, newValue: value)
     
+    }
+    
+    private func fieldForDate(name:String, attribute:NSAttributeDescription) -> EditHelperProtocol{
+        
+        let value = self.model.dateAttribute(name: name)
+        return  EditHelper(name: name, cellReusableId:"EditDateTimeTableViewCell", initialValue: value, newValue: value)
+        
     }
     
     @IBAction func save(sender: AnyObject) {
@@ -374,6 +386,7 @@ class ModelDetailsEditTableViewController : UITableViewController, ModelListTabl
    
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.selectedImageEditHelper = nil
+        dismiss(animated: true, completion: nil)
         
     }
 

@@ -27,6 +27,7 @@ public protocol LaravelTask {
 
     func cancel()
 
+    var progress:Progress {get}
     
 }
 
